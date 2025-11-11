@@ -2,9 +2,9 @@ name: Java CI
 
 on:
   push:
-    branches: [ bito_ ]
+    branches: [ bito1_ ]
   pull_request:
-    branches: [ bito_ ]
+    branches: [ bito1_ ]
 
 jobs:
   build:
@@ -14,8 +14,6 @@ jobs:
       # Checkout the repository from the bito_ branch.
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          ref: bito_
 
       # Set up JDK 21 using the Temurin distribution.
       - name: Set up JDK 21
@@ -28,8 +26,7 @@ jobs:
 
       #  Download the JUnit Platform Console Standalone JAR to run tests.
       - name: Download JUnit Console Launcher
-        run: |
-         wget https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.9.3/junit-platform-console-standalone-1.9.3.jar
+        run: wget https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.9.3/junit-platform-console-standalone-1.9.3.jar
 
       # Compile the Java source file and test file located in the "bito__" folder.
       - name: Compile sources and tests

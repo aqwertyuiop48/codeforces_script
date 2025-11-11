@@ -8,8 +8,4 @@ node_modules
 .qodo
 .mypy_cache
 .gradle
-Nielsen
-Python
 build
-*.jar
-bito__/*.class
