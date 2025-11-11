@@ -1,7 +1,9 @@
 .DS_Store
-codeforces_script.iml
-target
+execute/*.class
 .idea
-TempProgram
+#.github/workflows/main_java.yml
+elm-stuff
+elm.js
 .gradle/
 build/
+target/

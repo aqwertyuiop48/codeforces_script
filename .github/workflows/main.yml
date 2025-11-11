@@ -1,68 +1,59 @@
-name: Dart CI
+name: Elm Hello World
 
 on:
   push:
-    branches: [ dart_ ]
+    branches:
+      - elm_
+  pull_request:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v2
 
-    - name: Install Dart
-      uses: dart-lang/setup-dart@v1
-      with:
-        sdk: '3.4.0'
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14' # or any version you prefer
 
-    - name: Get dependencies
-      run: dart pub get
+      - name: Install Elm
+        run: |
+         npm install -g elm
 
-    - name: Run Dart application
-      run: |
-        dart pub global activate interactive
-        
-        dart run execute/hello.dart
-        dart run execute/stub.dart
-        python execute/dart_in_python.py
+      - name: Run Docker commands through Python
+        run: |
+          python run_docker.py
 
-    - name: Run Dart in tmpfs
-      run: |
-        docker run --rm \
-          --mount type=tmpfs,dst=/tmp/my_tmpfs,tmpfs-mode=1777 \
-          ubuntu bash -c "
-            apt-get update &&
-            apt-get install -y wget unzip &&
-            wget -qO- https://storage.googleapis.com/dart-archive/channels/stable/release/latest/sdk/dartsdk-linux-x64-release.zip > dart-sdk.zip &&
-            unzip dart-sdk.zip -d /usr/lib &&
-            export PATH=\$PATH:/usr/lib/dart-sdk/bin &&
-            mkdir -p /tmp/my_tmpfs &&
-            echo 'void main() { print(\"Hello from Dart in tmpfs!\"); }' > /tmp/my_tmpfs/myscript.dart &&
-            dart /tmp/my_tmpfs/myscript.dart
-          "
+      - name: Run Docker commands through Python again
+        run: |
+          python run_docker1.py
+
+      - name: Build Elm project
+        run: |
+         elm install elm/core && elm install elm/html && elm install elm/browser && elm install hecrj/html-parser
+         elm make src/Main.elm --output=js_/Main.js
+         elm make src/Hello_1.elm --output=js_/Hello_1.js
+         elm make src/Html_2.elm --output=js_/Html_2.js
+         elm make src/Html_3.elm --output=js_/Html_3.js
+         elm make src/Html_iframe.elm --output=js_/Html_iframe.js
+         elm make src/Functions_4.elm --output=js_/Functions_4.js
+         elm make src/Lists_5.elm --output=js_/Lists_5.js
+         elm make src/Conditionals_6.elm --output=js_/Conditionals_6.js
+         elm make src/Strings_7.elm --output=js_/Strings_7.js
 
 
-      # dart run execute/ins.dart
-
-    
- #      echo 'print("Hello from Dart shell!");' | interactive
- #       echo 'print("Hello from Dart shell!");' | dart
- #      dart eval "print('Hello, runline Dart!');"
- #     echo "void main() { print('Hello, runline Dart!'); }" | dart run
- #      dart run -e "void main() { print('Hello, runline Dart!'); }"
- #      echo "void main() { print('Hello, runline Dart!'); }" | dart run --stdin
- #      dart run --eval "print('Hello, runline Dart!');"
- #      printf "void main() { print('Hello, runline Dart!'); }" | dart run
- #      dart run -c 'void main() { print("Hello from Dart!"); }'
-
-#  dart run <<EOF
-#        void main() {
-#           print('Hello, runline Dart!');
-#        }
-#        EOF
-
-    # - name: Compile Dart application
-    #   run: dart compile exe execute/hello.dart -o execute /hello
+      - name: Upload HTML artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: elm-artifact
+          path: |
+           html_
+           js_
+           ./index.html
+           ./index_1.html
+           ./index_2.html
+           ./index_3.html
+           ./index1.html
