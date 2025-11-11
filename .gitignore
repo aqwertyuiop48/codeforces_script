@@ -1,9 +1,9 @@
 .DS_Store
-execute/*.class
 .idea
-.mypy_cache
-elm-stuff
-node_modules
+target
 .gradle/
-build/
-target/
+.qodo/
+.vscode/
+.qodo
+Python
+build
