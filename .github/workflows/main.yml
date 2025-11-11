@@ -3,7 +3,7 @@ name: Java CI
 on:
   push:
     branches:
-      - java_  # Adjust the branch name as needed
+      - javac_   # Adjust the branch name as needed
 
 jobs:
   build:
@@ -12,6 +12,14 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+
+    - name: Install C++ Compiler
+      run: sudo apt-get install g++
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable  # Use the stable version of Rust
 
     - name: Set up JDK 21
       uses: actions/setup-java@v2
@@ -24,21 +32,47 @@ jobs:
         overwrite-settings: true
         job-status: 'success'
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'  # Specify the Node.js version you need
-
-    - name: Install dependencies
-      run: npm install  # Run this if you have dependencies; otherwise, skip
-
-    - name: Run Inline Java Code via Node.js
-      run: node java_node.js
-
-    - name: Build with Maven
-      run: mvn clean install
-
-    - name: Run Java Shebang script
+    - name: Compile and Run Java Files
       run: |
-        chmod +x shebang_job.sh
-        java --source 21 shebang_job.sh  1 3 5
+        #!/bin/bash
+        # Compile all Java files
+        cd execute 
+        
+        # Download Guava jar from Maven Central
+        wget https://repo1.maven.org/maven2/com/google/guava/guava/33.0.0-jre/guava-33.0.0-jre.jar -O guava.jar
+
+        # Compile all Java files with Guava on the classpath
+        javac -cp guava.jar *.java
+
+        # Check if compilation was successful
+        if [ $? -eq 0 ]; then
+            # Run each Java file in sequence
+            for file in *.java; do
+                # Get the base name of the file (without .java)
+                class_name="${file%.java}"
+                echo "Class $class_name..."
+                java -cp ".:guava.jar" "$class_name"
+            done
+        else
+            echo "Compilation failed."
+            exit 1
+        fi
+
+    - name: Compile and Run Java Files 1 - CPP and Rust
+      run: |
+        #!/bin/bash
+        # Compile all Java files
+        cd execute1 && javac *.java
+        # Check if compilation was successful
+        if [ $? -eq 0 ]; then
+            # Run each Java file in sequence
+            for file in *.java; do
+                # Get the base name of the file (without .java)
+                class_name="${file%.java}"
+                echo "Class $class_name..."
+                java "$class_name"
+            done
+        else
+            echo "Compilation failed."
+            exit 1
+        fi
