@@ -1,27 +1,99 @@
-name: Julia CI
+name: Build and Run Kotlin
 
 on:
   push:
-    branches: [ julia_ ]
+    branches:
+      - kotlin1_
   pull_request:
-    branches: [ julia_ ]
+    branches:
+      - kotlin1_
+
+permissions:
+  contents: write  # Allows write access to the repository contents
+  issues: write    # Optional: Allows write access to issues
+  pull-requests: write  # Optional: Allows write access to pull requests
 
 jobs:
+
+  build1:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Check out code
+          uses: actions/checkout@v2
+
+        - name: Compile and Run Kotlin Code
+          run: |
+            #!/bin/bash
+
+            # Navigate to the target directory and create the necessary directories
+            cd src/main/kotlin/com/execute
+            mkdir -p out/classes
+
+            # Compile and run each .kt file in the current directory, excluding Utils.kt
+            for file in *.kt; do
+                # Skip Utils.kt
+                if [[ "$file" == "Utils.kt" ]]; then
+                    continue
+                fi
+
+                # Check if the file exists
+                if [[ -f "$file" ]]; then
+                    # Get the base name of the file without the extension
+                    base_name="${file%.kt}"
+
+                    # Compile the Kotlin file along with Utils.kt
+                    kotlinc -cp out/classes -d out/classes "$file" Utils.kt
+
+                    # Run the compiled Kotlin class
+                    kotlin -cp out/classes com.execute."$base_name"Kt
+                fi
+            done
+
+
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v2
 
-    - name: Install Julia
-      uses: julia-actions/setup-julia@v1
-      with:
-        julia-version: '1.11'  # Specify the Julia version you want
-        # or use 'latest' to always use the latest version
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
-    - name: Run all Julia files in the execute folder
-      run: |
-        for file in execute/*.jl; do
-          julia "$file"
-        done
+      - name: Install Kotlin
+        run: |
+          curl -s https://get.sdkman.io | bash
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
+          sdk install kotlin
+
+      - name: Compile and Run Kotlin Code
+        run: |
+          #!/bin/bash
+
+          # Navigate to the target directory and create the necessary directories
+          cd src/main/kotlin/com/execute
+          mkdir -p out/classes
+
+          # Compile and run each .kt file in the current directory, excluding Utils.kt
+          for file in *.kt; do
+              # Skip Utils.kt
+              if [[ "$file" == "Utils.kt" ]]; then
+                  continue
+              fi
+
+              # Check if the file exists
+              if [[ -f "$file" ]]; then
+                  # Get the base name of the file without the extension
+                  base_name="${file%.kt}"
+
+                  # Compile the Kotlin file along with Utils.kt
+                  kotlinc -cp out/classes -d out/classes "$file" Utils.kt
+
+                  # Run the compiled Kotlin class
+                  kotlin -cp out/classes com.execute."$base_name"Kt
+              fi
+          done
