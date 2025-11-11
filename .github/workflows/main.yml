@@ -3,7 +3,7 @@ name: Docker Workflow
 on:
   push:
     branches:
-      - micronaut_java_
+      - micronaut_kotlin_
 
 jobs:
   build-and-run:
@@ -21,10 +21,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-############################### Java ###############################
+############################### Kotlin ###############################
       - name: Build Application docker - 2
         run: |
-          docker build -t micronaut-java .
-          # docker run -p 8080:8080 micronaut-java
-          docker tag micronaut-java sreedockerhub19/micronaut-java:latest
-          docker push sreedockerhub19/micronaut-java:latest
+          docker build -t micronaut-kotlin .
+          # docker run -p 8080:8080 micronaut-kotlin
+          docker tag micronaut-kotlin sreedockerhub19/micronaut-kotlin:latest
+          docker push sreedockerhub19/micronaut-kotlin:latest

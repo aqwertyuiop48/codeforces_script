@@ -3,11 +3,11 @@ FROM gradle:8.6.0-jdk21 AS build
 WORKDIR /app
 
 # Copy Gradle build files first for caching
-COPY build.gradle settings.gradle gradle.properties ./
+COPY build.gradle.kts settings.gradle.kts gradle.properties ./
 COPY gradlew ./
 COPY gradle gradle
 
-# Make gradlew executable
+# Make gradlew executable AFTER copying it
 RUN chmod +x gradlew
 
 # Download dependencies (skip error if not all appear)
@@ -16,7 +16,7 @@ RUN ./gradlew dependencies --no-daemon || true
 # Copy full project
 COPY . .
 
-# Make gradlew executable again (COPY . . overwrites permissions)
+# Ensure gradlew is still executable after copying everything
 RUN chmod +x gradlew
 
 # Build the application with shadowJar
