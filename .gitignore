@@ -1,9 +1,6 @@
 .DS_Store
-src/main/kotlin/com/execute/*.class
-src/main/kotlin/com/execute/*.jar
-src/main/kotlin/com/execute/out
+execute/*.class
 .idea
-.mypy_cache
 .gradle/
 build/
 target/

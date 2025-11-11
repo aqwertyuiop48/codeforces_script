@@ -1,101 +1,31 @@
-name: CI
+name: Build and Run Pascal Program
 
 on:
   push:
     branches:
-      - objective_c_
+      - pascal_  # or your default branch name
+  pull_request:
+    branches:
+      - pascal_  # or your default branch name
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest  # You can change to other operating systems like 'windows-latest' if necessary
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      # - name: Install Xcode Command Line Tools
-      #   run: |
-      #     xcode-select --install
-
-      - name: Verify Python Installation
+      - name: Install Free Pascal
         run: |
-          which python3
-          python3 --version
+          sudo apt-get update
+          sudo apt-get install -y fpc  # Installs Free Pascal compiler
 
-
-      - name: Build the project
-        run: make
-
-      - name: Run the program
-        run: ./HelloWorld
-
-      - name: Compile and Run Objective-C++
+      - name: Compile Pascal Program
         run: |
-          clang -framework Foundation -o hello hello.m
-          ./hello
-          clang++ -std=c++11 -framework Foundation -o run_python_node hello.mm
-          ./run_python_node
-          clang++ -std=c++11 -framework Foundation -o find_path hello1.mm
-          ./find_path
+          fpc hello.pas  # Compiles the Pascal file
 
-
-      - name: List Foundation Framework Headers
+      - name: Run Pascal Program
         run: |
-          #!/bin/bash
+          ./hello  # Executes the compiled Pascal program
 
-          # Array of potential paths to check for Foundation.h
-          search_paths=(
-              "/usr/include/GNUstep/Foundation/Foundation.h"
-              "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h"
-              "/usr/local/include/Foundation/Foundation.h"
-              "/usr/include/Foundation/Foundation.h"
-          )
-
-          # Flag to track if the file was found
-          found=false
-
-          # Check each path
-          for path in "${search_paths[@]}"; do
-              if [[ -f "$path" ]]; then
-                  echo "Found Foundation.h at: $path"
-                  found=true
-                  break
-              fi
-          done
-
-          # If not found, print a message
-          if ! $found; then
-              echo "Foundation.h not found in the specified paths."
-          fi
-
-
-      - name: Compile and run Objective-C++ code from file
-        run: |
-            # Create the Objective-C++ source file
-            echo '#import </Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h>
-
-            int main(int argc, const char * argv[]) {
-                @autoreleasepool {
-                    NSLog(@"Hello from Objective-C++ on GitHub Actions from here!");
-                }
-                return 0;
-            }' > hellos.mm
-
-            # Compile the source file
-            clang++ -std=c++11 -framework Foundation -o hellos hellos.mm
-
-            # Run the compiled executable
-            ./hellos
-
-
-      - name: Compile and run the Objective-C++ code using echo piping
-        run: |
-              echo '#import </Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h>
-          
-              int main(int argc, const char * argv[]) {
-                  @autoreleasepool {
-                      NSLog(@"Hello from Objective-C++ on GitHub Actions from here inline!");
-                  }
-                  return 0;
-              }' | clang++ -std=c++11 -framework Foundation -x objective-c++ -o hello0 - && ./hello0
-          
