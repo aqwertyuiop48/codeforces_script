@@ -1,93 +1,43 @@
-name: Run the Node.js Script 
+name: MATLAB Hello World Workflow
 
 on:
   push:
     branches:
-      - main_
-  repository_dispatch:
-    types:
-      - trigger-codeforces-script # This listens for the custom dispatch event
+      - matlab_
+  # pull_request:
+  #   branches:
+  #     - main
 
 jobs:
-  build-ubuntu:
+  run-matlab:
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Run Bitbucket script
-      #   run: |
-      #     git clone https://sreebitbucket19@bitbucket.org/sreebitbucket19/first_repo.git
-      #     cd first_repo
-      #     ls -la
-      #     python hello.py 
-
-      - name: Checkout code
+      - name: Checkout the code
         uses: actions/checkout@v2
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v2
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          matlab-version: 'R2023b'  # Specify the MATLAB version (adjust as needed)
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v1
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          dotnet-version: '6.x'  # Specify the .NET version you want
+          python-version: '3.8'
 
-      - name: Install dotnet-script
+      - name: Run all MATLAB files in the folder
         run: |
-          dotnet tool install -g dotnet-script --version 1.5.0
-          export PATH="$PATH:/home/runner/.dotnet/tools"
+            mkdir -p output
+            # Make sure the script is executable
+            chmod +x ./run_all_matlab_files.sh
+            # Execute the shell script that runs all .m files
+            ./run_all_matlab_files.sh
+            matlab -batch "disp('Running MATLAB code inline!'); a = 3; b = 5; disp(['Sum: ', num2str(a+b)])"
 
 
-      - name: Install Kotlin
-        run: |
-          curl -s https://get.sdkman.io | bash
-          source "$HOME/.sdkman/bin/sdkman-init.sh"
-          sdk install kotlin
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Upload plot artifact
+        uses: actions/upload-artifact@v4
         with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm install
-      
-      - name: Install C++ Compiler
-        run: sudo apt-get install g++
-
-      - name: Run script
-        run: npm run pystart
-
-  build-macos:
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v2
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
-      - name: Install Kotlin
-        run: |
-          curl -s https://get.sdkman.io | bash
-          source "$HOME/.sdkman/bin/sdkman-init.sh"
-          sdk install kotlin
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run script
-        run: |
-         npm run pystartmac
-         
+         name: all plots
+         path: output  # Path to the generated plot
