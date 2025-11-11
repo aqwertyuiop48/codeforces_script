@@ -1,43 +1,30 @@
-name: MATLAB Hello World Workflow
+name: Docker Workflow
 
 on:
   push:
     branches:
-      - matlab_
-  # pull_request:
-  #   branches:
-  #     - main
+      - micronaut_java_
 
 jobs:
-  run-matlab:
+  build-and-run:
+    name: Docker run workflow
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the code
-        uses: actions/checkout@v2
 
-      - name: Set up MATLAB
-        uses: matlab-actions/setup-matlab@v1
+      - name: Checkout repository
+        uses: actions/checkout@v4  # ⬅️ This was missing
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          matlab-version: 'R2023b'  # Specify the MATLAB version (adjust as needed)
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-
-      - name: Run all MATLAB files in the folder
+############################### Java ###############################
+      - name: Build Application docker - 2
         run: |
-            mkdir -p output
-            # Make sure the script is executable
-            chmod +x ./run_all_matlab_files.sh
-            # Execute the shell script that runs all .m files
-            ./run_all_matlab_files.sh
-            matlab -batch "disp('Running MATLAB code inline!'); a = 3; b = 5; disp(['Sum: ', num2str(a+b)])"
-
-
-      - name: Upload plot artifact
-        uses: actions/upload-artifact@v4
-        with:
-         name: all plots
-         path: output  # Path to the generated plot
+          docker build -t micronaut-java .
+          # docker run -p 8080:8080 micronaut-java
+          docker tag micronaut-java sreedockerhub19/micronaut-java:latest
+          docker push sreedockerhub19/micronaut-java:latest
