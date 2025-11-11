@@ -1,94 +1,76 @@
-name: Run Clojure Hello World
+name: CI
 
 on:
   push:
-    branches: [ clojure_ ]
+    branches: [ clojure_script ]
 
 jobs:
-  build:
+  build-and-run:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Set up Java
-      uses: actions/setup-java@v2
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
       with:
-        distribution: 'temurin'
-        java-version: '21'
+        node-version: '20'
 
-# Clojure CLI
+    # - name: Install planck
+    #   run: |
+    #     wget https://planck-repl.org/releases/2.25.0-debian-9.0-x86_64/planck
+    #     chmod +x planck
+    #     sudo mv planck /usr/local/bin/
+    #     sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.0-37
+    #     planck -e "(println (+ 2 3))"
 
-    - name: Install Clojure CLI
-      uses: DeLaGuardo/setup-clojure@master
-      with:
-        cli: 1.11.1.1403
+    - name: Install nbb
+      run: |
+        npm install nbb -g
+        nbb -e '(+ 1 2 3)'
+        npm install csv-parse shelljs term-size zx
+        npm run start
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+    - name: nbb inline
+      run: |
+        nbb -e '(ns hello
+          (:require ["csv-parse/sync" :as csv]
+                    ["fs" :as fs]
+                    ["path" :as path]
+                    ["shelljs$default" :as sh]
+                    ["term-size$default" :as term-size]
+                    ["zx" :refer [$]]
+                    ["zx$fs" :as zxfs]
+                    [nbb.core :refer [*file* await]]))
+        (println "Hello from nbb!")
+        (println "Sum of 1+2+3 is" (+ 1 2 3))
+        (println "Files in current directory:")
+        (println (fs/readdirSync "."))
+        (prn (path/resolve "."))
+        (prn (term-size))
+        ; (println (count (str (fs/readFileSync *file*))))
+        (prn (sh/ls "."))
+        (prn (csv/parse "foo,bar"))
+        ; (prn (zxfs/existsSync *file*))
+        (await ($ #js ["ls"]))'
 
-    - name: Run Clojure -e example and Python
+    - name: Install dependencies
       run: |
-       clojure -e "(println \"Hello from -e!\")"
-       python testing.py
-       chmod +x testing.sh
-       ./testing.sh
+        cd my-cljs-node-app
+        npm install
+        npm install left-pad
+        npx shadow-cljs compile app
+        node out/main.js
 
-    - name: Run cc.clj
+    - name: Install lumo
       run: |
-       clojure my-clojure-app/src/my_clojure_app/cc.clj
+        npm install -g lumo-cljs
+        lumo -e "(println (+ 1 2))"
 
-    - name: Install Kotlin compiler
+    - name: Eval with shadow-cljs
       run: |
-        curl -s "https://get.sdkman.io" | bash
-        source "$HOME/.sdkman/bin/sdkman-init.sh"
-        sdk install kotlin 1.9.24
-        kotlinc -version
-        sudo apt-get update && sudo apt-get install -y groovy
-    - name: Compile Kotlin and Run Clojure App
-      run: |
-        cd my-clojure-app 
-        mkdir -p target/kotlin
-        mvn install
-        kotlinc src/main/kotlin -d target/kotlin -classpath "$(clojure -Spath)"
-        groovyc -d target/groovy src/main/groovy/utils/GStrings.groovy
-        #clojure -M:run
-        clojure -M:run-my        # runs my_clojure_app.core
-        clojure -M:run-gradle    # runs clojuregradle.core
-# Using leiningen
-
-    - name: Install Leiningen
-      run: |
-        curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
-        chmod +x lein
-        sudo mv lein /usr/local/bin/lein
-        lein --version
-    - name: Run Clojure App
-      run: |
-        cd my-clojure-app
-        lein run && lein run-my && lein run-gradle
-    - name: Compile Clojure App
-      run: |
-        cd my-clojure-app
-        lein compile
-    - name: Run Clojure App
-      run: |
-        cd my-clojure-app
-        lein run && lein run-my && lein run-gradle
-# Gradle Step
-
-    - name: Build and run with Gradle
-      run: |
-        cd my-clojure-app
-        gradle wrapper
-        ./gradlew clean compileKotlin
-        ./gradlew build run
-# Maven step
-
-    - name: Build and run with Maven
-      run: |
-       cd my-clojure-app 
-       mvn clean compile exec:java -Dexec.mainClass=clojuregradle.core
+        cd my-cljs-node-app
+        npm install
+        npx shadow-cljs compile eval
+        node out/eval.js
