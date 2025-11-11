@@ -1,8 +1,11 @@
 .DS_Store
+execute/*.class
+.idea
 codeforces_script.iml
 target
-.idea
-TempProgram
-.mypy_cache
-.gradle/
-build/
+node_modules
+.gradle
+.vscode
+*.class
+META-INF/
+build

@@ -1,0 +1,71 @@
+plugins {
+    id 'java'
+    id 'groovy'                                          // ✅ Groovy plugin
+    id 'application'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.24'       // ✅ Kotlin plugin
+    id 'dev.clojurephant.clojure' version '0.8.0'        // ✅ Clojure plugin
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.clojure:clojure:1.11.1'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.24'
+    implementation 'org.jetbrains.kotlinx:kotlinx-datetime:0.5.0'
+    implementation 'org.codehaus.groovy:groovy:3.0.21'      // ✅ Groovy
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'src/main/kotlin']
+        }
+        groovy {
+            srcDirs = ['src/main/groovy']                  // ✅ Add Groovy
+        }
+        clojure {
+            srcDirs = ['src/main/clojure']
+        }
+    }
+}
+
+clojure {
+    builds {
+        main {
+            aotNamespaces.add('clojuregradle.core')
+            reflection = 'warn'
+            aotAll()
+            // ✅ Add Kotlin & Groovy compiled classes to Clojure classpath
+            classpath.from(files(
+                "$buildDir/classes/kotlin/main",
+                "$buildDir/classes/groovy/main"
+            ))
+        }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    mainClass = 'clojuregradle.core'
+}
+
+tasks.named("checkClojure") {
+    dependsOn tasks.named("compileKotlin")
+    dependsOn tasks.named("compileGroovy")
+}
+
+tasks.named("compileClojure").configure {
+    dependsOn tasks.named("compileKotlin")
+    dependsOn tasks.named("compileGroovy")
+}
+
+tasks.withType(JavaExec).configureEach {
+    classpath = sourceSets.main.runtimeClasspath
+}

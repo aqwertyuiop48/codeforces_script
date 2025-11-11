@@ -1,10 +1,8 @@
-name: C# Hello World CI
+name: Run Clojure Hello World
 
 on:
   push:
-    branches:
-      - c_sharp
-  pull_request:
+    branches: [ clojure_ ]
 
 jobs:
   build:
@@ -14,107 +12,83 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up .NET
-      uses: actions/setup-dotnet@v1
+    - name: Set up Java
+      uses: actions/setup-java@v2
       with:
-        dotnet-version: '6.x'  # Specify the .NET version you want
+        distribution: 'temurin'
+        java-version: '21'
 
+# Clojure CLI
 
-    - name: Build the Project
-      run: dotnet build HelloWorld/HelloWorld.csproj
+    - name: Install Clojure CLI
+      uses: DeLaGuardo/setup-clojure@master
+      with:
+        cli: 1.11.1.1403
 
-    - name: Run the Project
-      run: dotnet run --project HelloWorld/HelloWorld.csproj
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
 
-    - name: Ensure .NET tools are in PATH
-      run: echo "/home/runner/.dotnet" >> $GITHUB_PATH
-
-    # - name: Install .NET SDK
-    #   run: |
-    #     wget http://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.203/dotnet-sdk-9.0.203-linux-x64.tar.gz
-    #     mkdir -p $HOME/dotnet && tar zxf dotnet-sdk-9.0.203-linux-x64.tar.gz -C $HOME/dotnet
-    #     export DOTNET_ROOT=$HOME/dotnet
-    #     export PATH=$PATH:$HOME/dotnet
-
-    # - name: Run the Standalone file
-    #   run: |
-    #     export PATH="$PATH:/home/runner/.dotnet/tools"
-    #     csc standalone.cs && ls -la && chmod +x standalone.exe && ./standalone.exe
-
-
-
-    - name: Install dotnet-script
+    - name: Run Clojure -e example and Python
       run: |
-        dotnet tool install -g dotnet-script --version 1.5.0
-        export PATH="$PATH:/home/runner/.dotnet/tools"
+       clojure -e "(println \"Hello from -e!\")"
+       python testing.py
+       chmod +x testing.sh
+       ./testing.sh
 
-    - name: Run inline C# code
+    - name: Run cc.clj
       run: |
-       echo 'Console.WriteLine("Hello from C# Interactive in GitHub Actions!");Environment.Exit(0);' | dotnet-script
-    
-    - name: Run multiline C# code
-      run: |
-        dotnet-script <<EOF
-        using System;
-        public class Program
-        {
-            public static void Main()
-            {
-                Console.WriteLine("Hello from C# Interactive in GitHub Actions multiline!");
-                Console.WriteLine("This is a multiline C# code example.");
-            }
-        }
-        Program.Main();
-        Environment.Exit(0);
-        EOF
+       clojure my-clojure-app/src/my_clojure_app/cc.clj
 
-    - name: Run multiline nested C# code
+    - name: Install Kotlin compiler
       run: |
-        dotnet-script <<EOF
-        using System;
-        using System.Diagnostics;
-        public class Program
-        {
-            public static void Main()
-            {
-                // Define the Python command as a multiline string
-                string pythonCommand = @"
-        print('Hello from Python!')
-        x = 9
-        y = 10
-        print(f'The sum here of {x} and {y} is {x + y}.')
-        ";
-                // Create a new process
-                ProcessStartInfo processInfo = new ProcessStartInfo
-                {
-                    FileName = "python", // Adjust this to "python3" if needed
-                    Arguments = $"-c \"{pythonCommand}\"", // The command to execute
-                    RedirectStandardOutput = true, // Redirect output to read it
-                    RedirectStandardError = true, // Redirect error output
-                    UseShellExecute = false, // Required for redirection
-                    CreateNoWindow = true // Do not create a window
-                };
-                using (Process process = new Process())
-                {
-                    process.StartInfo = processInfo;
-                    // Start the process
-                    process.Start();
-                    // Read the output (or error)
-                    string output = process.StandardOutput.ReadToEnd();
-                    string error = process.StandardError.ReadToEnd();
-                    // Wait for the process to finish
-                    process.WaitForExit();
-                    // Print output and error (if any)
-                    Console.WriteLine("Output:");
-                    Console.WriteLine(output);
-                    if (!string.IsNullOrEmpty(error))
-                    {
-                        Console.WriteLine("Error:");
-                        Console.WriteLine(error);
-                    }
-                }
-            }
-        }
-        Program.Main();
-        Environment.Exit(0);
-        EOF
+        curl -s "https://get.sdkman.io" | bash
+        source "$HOME/.sdkman/bin/sdkman-init.sh"
+        sdk install kotlin 1.9.24
+        kotlinc -version
+        sudo apt-get update && sudo apt-get install -y groovy
+    - name: Compile Kotlin and Run Clojure App
+      run: |
+        cd my-clojure-app 
+        mkdir -p target/kotlin
+        mvn install
+        kotlinc src/main/kotlin -d target/kotlin -classpath "$(clojure -Spath)"
+        groovyc -d target/groovy src/main/groovy/utils/GStrings.groovy
+        #clojure -M:run
+        clojure -M:run-my        # runs my_clojure_app.core
+        clojure -M:run-gradle    # runs clojuregradle.core
+# Using leiningen
+
+    - name: Install Leiningen
+      run: |
+        curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
+        chmod +x lein
+        sudo mv lein /usr/local/bin/lein
+        lein --version
+    - name: Run Clojure App
+      run: |
+        cd my-clojure-app
+        lein run && lein run-my && lein run-gradle
+    - name: Compile Clojure App
+      run: |
+        cd my-clojure-app
+        lein compile
+    - name: Run Clojure App
+      run: |
+        cd my-clojure-app
+        lein run && lein run-my && lein run-gradle
+# Gradle Step
+
+    - name: Build and run with Gradle
+      run: |
+        cd my-clojure-app
+        gradle wrapper
+        ./gradlew clean compileKotlin
+        ./gradlew build run
+# Maven step
+
+    - name: Build and run with Maven
+      run: |
+       cd my-clojure-app 
+       mvn clean compile exec:java -Dexec.mainClass=clojuregradle.core
