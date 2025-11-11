@@ -1,9 +1,7 @@
 .DS_Store
-execute/*.class
+codeforces_script.iml
+target
 .idea
-.mypy_cache
-elm-stuff
-node_modules
+TempProgram
 .gradle/
 build/
-target/
