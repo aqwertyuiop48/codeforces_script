@@ -1,9 +1,9 @@
-name: Elm Hello World
+name: Go Hello World
 
 on:
   push:
     branches:
-      - elm_
+      - golang_
   pull_request:
 
 jobs:
@@ -11,49 +11,153 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14' # or any version you prefer
+          node-version: '18'
 
-      - name: Install Elm
+      - name: Install dependencies
         run: |
-         npm install -g elm
+         npm install sprintf-js playwright
+         npx playwright install
 
-      - name: Run Docker commands through Python
+      # Step 2: Set up Go environment
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21  # Specify the Go version you want to use
+
+      # Step 3: Install dependencies (if any)
+      - name: Install dependencies
+        working-directory: ./execute
+        run: go mod tidy
+
+      - name: Clone goeval repository
         run: |
-          python run_docker.py
-
-      - name: Run Docker commands through Python again
+          git clone https://github.com/dolmen-go/goeval.git /tmp/goeval
+  
+      - name: Install goeval
         run: |
-          python run_docker1.py
+          cd /tmp/goeval
+          go install .
 
-      - name: Build Elm project
+      - name: Add Go bin directory to PATH
         run: |
-         elm install elm/core && elm install elm/html && elm install elm/browser && elm install hecrj/html-parser
-         elm make src/Main.elm --output=js_/Main.js
-         elm make src/Hello_1.elm --output=js_/Hello_1.js
-         elm make src/Html_2.elm --output=js_/Html_2.js
-         elm make src/Html_3.elm --output=js_/Html_3.js
-         elm make src/Html_iframe.elm --output=js_/Html_iframe.js
-         elm make src/Functions_4.elm --output=js_/Functions_4.js
-         elm make src/Lists_5.elm --output=js_/Lists_5.js
-         elm make src/Conditionals_6.elm --output=js_/Conditionals_6.js
-         elm make src/Strings_7.elm --output=js_/Strings_7.js
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+
+      - name: Verify goeval installation
+        run: |
+          goeval -i fmt 'fmt.Println("Hello, Goeval world with fmt!")'  # Or run any command to verify goeval is installed
+
+    
+      - name: Run Go code with goeval
+        run: |
+            goeval -i fmt -i math 'fmt.Printf("The square root of 16 is %.2f\n", math.Sqrt(16))'
+
+      - name: Run all Go files in the  folders
+        run: |
+          cd execute  # Change to the 'execute' directory
+          for file in *.go; do
+            echo "Running $file"
+            go run "$file"  # Run each Go file
+          done
+          cd ..
+
+          cd 2_intro  
+          for file in *.go; do
+            echo "Running $file"
+            go run "$file"  # Run each Go file
+          done
+          cd ..
+
+      - name: Run Go Server
+        run: |
+          mkdir -p videos
+          nohup go run server_/server_1.go &
+          sleep 10  # Wait for the Go server to start
+      
+      - name: Capture HTML content from localhost
+        run: |
+                # Fetch the HTML content from the server running at localhost:8080
+                curl http://localhost:8080 -o videos/index.html
+                curl -v http://localhost:8080
+                curl http://localhost:8080/hello -o videos/hello.html
+                curl -v http://localhost:8080/hello
+                curl http://localhost:8080/hello2 -o videos/hello2.html
+                curl -v http://localhost:8080/hello2
+
+      - name: Take screenshot of the page
+        run: |
+                  npm install playwright
+                  npx playwright install
+                  npx playwright screenshot http://localhost:8080 videos/index.png
+                  npx playwright screenshot http://localhost:8080/hello videos/hello.png
+                  npx playwright screenshot http://localhost:8080/hello2 videos/hello2.png
+        
+      - name: Record video of the pages
+        run: |
+                    npx playwright install
+                    node -e "
+                      const { chromium } = require('playwright');
+                      (async () => {
+                        const browser = await chromium.launch();
+                        const context = await browser.newContext({
+                          recordVideo: {
+                            dir: 'videos/', // Directory to save the video
+                            size: { width: 1280, height: 720 } // Optional: Set video resolution
+                          }
+                        });
+                        const page = await context.newPage();
+
+                        // Function to display the current endpoint on the page
+                        async function displayEndpoint(endpoint) {
+                          await page.evaluate((endpoint) => {
+                            const existing = document.getElementById('endpoint-label');
+                            if (existing) {
+                              existing.innerText = 'Currently visiting: '+endpoint;
+                            } else {
+                              const div = document.createElement('div');
+                              div.id = 'endpoint-label';
+                              div.style.position = 'fixed';
+                              div.style.top = '10px';
+                              div.style.left = '10px';
+                              div.style.padding = '10px';
+                              div.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                              div.style.color = 'white';
+                              div.style.fontSize = '20px';
+                              div.innerText = 'Currently visiting: '+endpoint;
+                              document.body.appendChild(div);
+                            }
+                          }, endpoint);
+                        }
 
 
-      - name: Upload HTML artifact
+                        await page.goto('http://localhost:8080');
+                        await displayEndpoint('/'); // Show the current endpoint on the page
+                        await page.waitForTimeout(2000); // Wait for 2 seconds
+
+                        await page.goto('http://localhost:8080/hello');
+                        await displayEndpoint('/hello'); // Show the current endpoint on the page
+                        await page.waitForTimeout(2000); // Wait for 2 seconds
+
+                        await page.goto('http://localhost:8080/hello2');
+                        await displayEndpoint('/hello2'); // Show the current endpoint on the page
+                        await page.waitForTimeout(2000); // Wait for 2 seconds
+
+                        // Close the browser (this finalizes the video recording)
+                        await browser.close();
+                      })();
+                    "
+                
+        
+        
+      - name: Upload HTML file as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: elm-artifact
-          path: |
-           html_
-           js_
-           ./index.html
-           ./index_1.html
-           ./index_2.html
-           ./index_3.html
-           ./index1.html
+            name: captured-html-artifacts
+            path: |
+             videos/
