@@ -1,59 +1,53 @@
-name: Scala CI
+name: Run GUI Application with Xvfb
 
 on:
   push:
     branches:
-      - scala_
-
+      - scilab_
 
 jobs:
-  build:
+  run-with-xvfb:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        scala-version: [2.13.8, 3.3.1] # Scala versions to test
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Run Shell command
-        run: chmod +x curl_.sh && ./curl_.sh
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openjdk-11-jdk  # Install required dependencies
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v2
-        with:
-          java-version: '21'
-          distribution: 'temurin'
+    - name: Install Scilab
+      run: |
+        wget https://www.scilab.org/download/6.1.1/scilab-6.1.1.bin.linux-x86_64.tar.gz
+        tar -xzf scilab-6.1.1.bin.linux-x86_64.tar.gz
+        sudo mv scilab-6.1.1 /opt/scilab
+        sudo ln -s /opt/scilab/bin/scilab-cli /usr/local/bin/scilab-cli
 
-      - name: Set up Scala
-        uses: olafurpg/setup-scala@v12
-        with:
-          scala-version: ${{ matrix.scala-version }}
+    - name: Install libtinfo5
+      run: |
+        # Download the libtinfo5 package
+        wget http://archive.ubuntu.com/ubuntu/pool/main/n/ncurses/libtinfo5_6.1-1ubuntu1_amd64.deb
+        # Install the package using dpkg
+        sudo dpkg -i libtinfo5_6.1-1ubuntu1_amd64.deb
+        # Fix any missing dependencies
+        sudo apt-get install -f -y
 
-      - name: Cache sbt dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.sbt/boot/scala*
-          key: ${{ runner.os }}-sbt-${{ hashFiles('**/*.sbt') }}-${{ matrix.scala-version }}
-          restore-keys: |
-            ${{ runner.os }}-sbt-
+    - name: Run all SCILAB files in the folder
+      run: |
+        mkdir -p output
+        # Make sure the script is executable
+        chmod +x ./run_all_scilab_files.sh
+        # Execute the shell script that runs all .sci files
+        ./run_all_scilab_files.sh
 
-      - name: Run tests with sbt
-        run: sbt test
+    - name: Run Scilab with GUI
+      run: |
+        scilab-cli -nb -e "disp('Hello from inline Scilab!');"  # Run Scilab or your GUI application
 
-      - name: Compile and run Scala project
-        run: sbt run
-
-      - name: Run Scala code using sbt console
-        run: |
-          sbt console <<< 'println("""Hello,
-          Scala from sbt console!""" + """2""" + """
-          This is a multiline string!""")' | tail -n +8
-
-      - name: Run Scala code using sbt console again
-        run: |
-          sbt console <<< 'println("""Hello,
-          Scala from sbt console!""" + """2""" + """
-          This is a multiline string!""")' | awk '/\?2004h>/ {flag=1} flag {print}'
+    # - name: Upload plot artifact
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: all-plots
+    #     path: output  # Path to the generated plot files
