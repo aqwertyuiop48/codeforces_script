@@ -39,7 +39,9 @@ jobs:
         java-version: ${{ matrix.java-version }}
 
     - name: Build with Maven
-      run: mvn clean install
+      run: |
+       mvn clean install
+       mvn clean compile package
 
     - name: Run with Maven
       run: mvn test
@@ -66,3 +68,6 @@ jobs:
       run: |
        cd restassured_standalone
        mvn clean compile exec:java
+
+    - name: Run with Maven with tag
+      run: mvn clean test -Dcucumber.filter.tags="@interview"

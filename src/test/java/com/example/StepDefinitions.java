@@ -11,6 +11,7 @@ import static org.junit.Assert.*;
 public class StepDefinitions {
     private int result;
     private Calculator calculator;
+    private interviews interviews;
 
     @Before
     public void setup() {
@@ -25,6 +26,12 @@ public class StepDefinitions {
     @Given("I have a calculator")
     public void i_have_a_calculator() {
         calculator = new Calculator();
+    }
+
+    @Given("I am preparing")
+    public void i_am_preparing() {
+        interviews = new interviews();
+        interviews.main_(new String[]{});
     }
 
     @When("I add {int} and {int}")

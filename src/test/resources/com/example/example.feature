@@ -1,5 +1,9 @@
 Feature: Calculator operations
 
+  @interview
+  Scenario: Interviews
+    Given I am preparing
+
   Scenario: Simple addition
     Given I have a calculator
     When I add 2 and 3
