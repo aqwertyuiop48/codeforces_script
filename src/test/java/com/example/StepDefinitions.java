@@ -5,6 +5,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.After;
 import io.cucumber.datatable.DataTable;
 
+import java.io.IOException;
 import java.util.List;
 import static org.junit.Assert.*;
 
@@ -12,6 +13,7 @@ public class StepDefinitions {
     private int result;
     private Calculator calculator;
     private interviews interviews;
+    private Practice practice;
 
     @Before
     public void setup() {
@@ -29,9 +31,12 @@ public class StepDefinitions {
     }
 
     @Given("I am preparing")
-    public void i_am_preparing() {
+    public void i_am_preparing() throws IOException {
         interviews = new interviews();
         interviews.main_(new String[]{});
+
+        practice = new Practice();
+        practice.main(new String[]{});
     }
 
     @When("I add {int} and {int}")

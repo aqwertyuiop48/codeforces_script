@@ -65,6 +65,12 @@ public class interviews {
         System.out.println(si.calculate(3,4,5));
         System.out.println(si.g());
 
+        @FunctionalInterface
+        interface S2{double calculate(double p, double r, double t);}
+        S2 s2 = (p,t,r) -> (p*t*r)/100;
+        System.out.println(s2.calculate(3,4,5));
+
+
         System.out.println("======================================================================");
     }
 }

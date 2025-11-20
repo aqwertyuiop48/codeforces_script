@@ -11,3 +11,4 @@ Python/
 bito__/
 build/
 *.jar
+test.txt
