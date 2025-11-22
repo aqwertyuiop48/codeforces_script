@@ -34,3 +34,55 @@ jobs:
       uses: actions/setup-node@v3
       with:
           node-version: 18
+
+    - name: Start Ruby HTTP Server
+      run: |
+          # Start the Ruby HTTP server in the background
+          ruby server_.rb &
+          
+          # Give the server some time to start
+          sleep 10
+      
+          # Check if the Ruby server is running using ps
+          SERVER_PID=$(ps aux | grep '[r]uby server_.rb' | awk '{print $2}')
+          
+          if [ -n "$SERVER_PID" ]; then
+            echo "Ruby HTTP Server is running with PID $SERVER_PID."
+          else
+            echo "Ruby HTTP Server is not running."
+            exit 1
+          fi
+
+    - name: Capture website with wget
+      run: |
+          # Create output directory
+          mkdir -p videos
+          
+          # Use wget to recursively download the site with all assets
+          wget \
+            --recursive \
+            --no-clobber \
+            --page-requisites \
+            --html-extension \
+            --convert-links \
+            --restrict-file-names=windows \
+            --domains localhost \
+            --no-parent \
+            --directory-prefix=videos \
+            http://localhost:5678
+          
+          # Move the localhost:5678 folder contents to videos root
+          if [ -d "videos/localhost:5678" ]; then
+            mv videos/localhost:5678/* videos/ 2>/dev/null || true
+            rmdir videos/localhost:5678 2>/dev/null || true
+          fi
+          
+          # List captured files
+          echo "Captured files:"
+          ls -la videos/
+
+    - name: Upload HTML files as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: captured-website
+        path: videos/

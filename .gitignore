@@ -7,3 +7,4 @@ node_modules
 .gradle/
 build/
 target/
+test.txt
