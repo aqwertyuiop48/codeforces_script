@@ -15,12 +15,12 @@ jobs:
 
 ############################################ scala 2.13.12 ############################################
 
-      # sbt && sbt <<< : https://github.com/sreegithub19/codeforces_script/blob/scala_/.github/workflows/main.yml
-      # gradle: https://github.com/sreegithub19/codeforces_script/blob/scala_/.github/workflows/main_gradle.yml
-      # maven: https://github.com/sreegithub19/codeforces_script/blob/scala_/.github/workflows/main_maven.yml
-      # VirtusLab/scala-cli-setup@v1: https://github.com/sreegithub19/codeforces_script/blob/kotlin_/.github/workflows/scala_.yml
-      # Coursier with .scala : https://github.com/sreegithub19/codeforces_script/blob/kotlin_/.github/workflows/main_scala2_coursier.yml
-      # Coursier with .sc : https://github.com/sreegithub19/codeforces_script/blob/kotlin_/.github/workflows/main_sc2_coursier.yml
+      # sbt && sbt <<< : https://github.com/aqwertyuiop48/codeforces_script/blob/scala_/.github/workflows/main.yml
+      # gradle: https://github.com/aqwertyuiop48/codeforces_script/blob/scala_/.github/workflows/main_gradle.yml
+      # maven: https://github.com/aqwertyuiop48/codeforces_script/blob/scala_/.github/workflows/main_maven.yml
+      # VirtusLab/scala-cli-setup@v1: https://github.com/aqwertyuiop48/codeforces_script/blob/kotlin_/.github/workflows/scala_.yml
+      # Coursier with .scala : https://github.com/aqwertyuiop48/codeforces_script/blob/kotlin_/.github/workflows/main_scala2_coursier.yml
+      # Coursier with .sc : https://github.com/aqwertyuiop48/codeforces_script/blob/kotlin_/.github/workflows/main_sc2_coursier.yml
 
       - name: Set up Scala (for sbt)
         uses: olafurpg/setup-scala@v12
@@ -89,12 +89,12 @@ jobs:
           
 ############################################ scala 3.3.1 ############################################
 
-      # sbt && sbt <<< : https://github.com/sreegithub19/codeforces_script/blob/scala_/.github/workflows/main.yml
-      # gradle: https://github.com/sreegithub19/codeforces_script/blob/scala_/.github/workflows/main_gradle.yml
-      # maven: https://github.com/sreegithub19/codeforces_script/blob/scala_/.github/workflows/main_maven.yml
-      # VirtusLab/scala-cli-setup@v1: https://github.com/sreegithub19/codeforces_script/blob/kotlin_/.github/workflows/scala_.yml
-      # Coursier with .scala : https://github.com/sreegithub19/codeforces_script/blob/kotlin_/.github/workflows/main_scala3_coursier.yml
-      # Coursier with .sc : https://github.com/sreegithub19/codeforces_script/blob/kotlin_/.github/workflows/main_sc3_coursier.yml
+      # sbt && sbt <<< : https://github.com/aqwertyuiop48/codeforces_script/blob/scala_/.github/workflows/main.yml
+      # gradle: https://github.com/aqwertyuiop48/codeforces_script/blob/scala_/.github/workflows/main_gradle.yml
+      # maven: https://github.com/aqwertyuiop48/codeforces_script/blob/scala_/.github/workflows/main_maven.yml
+      # VirtusLab/scala-cli-setup@v1: https://github.com/aqwertyuiop48/codeforces_script/blob/kotlin_/.github/workflows/scala_.yml
+      # Coursier with .scala : https://github.com/aqwertyuiop48/codeforces_script/blob/kotlin_/.github/workflows/main_scala3_coursier.yml
+      # Coursier with .sc : https://github.com/aqwertyuiop48/codeforces_script/blob/kotlin_/.github/workflows/main_sc3_coursier.yml
 
 
       - name: Set up Scala (for sbt)
