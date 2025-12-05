@@ -31,7 +31,7 @@ public class StepDefinitions {
     }
 
     @Given("I am preparing")
-    public void i_am_preparing() throws IOException, InterruptedException {
+    public void i_am_preparing() throws IOException, InterruptedException, ClassNotFoundException {
         interviews = new interviews();
         interviews.main(new String[]{});
 
