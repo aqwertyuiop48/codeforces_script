@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Expose port
-EXPOSE 5678
+EXPOSE 10000
 
 # Run the Ruby server
 CMD ["ruby", "server_.rb"]
