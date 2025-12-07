@@ -11,4 +11,4 @@ COPY . .
 EXPOSE 5678
 
 # Run the Ruby server
-CMD ["ruby", "server.rb"]
+CMD ["ruby", "server_.rb"]
