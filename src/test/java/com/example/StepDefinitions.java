@@ -14,6 +14,8 @@ public class StepDefinitions {
     private Calculator calculator;
     private interviews interviews;
     private Practice practice;
+    private Testing testing;
+    private tests tests;
 
     @Before
     public void setup() {
@@ -31,12 +33,18 @@ public class StepDefinitions {
     }
 
     @Given("I am preparing")
-    public void i_am_preparing() throws IOException, InterruptedException, ClassNotFoundException {
+    public void i_am_preparing() throws Exception {
         interviews = new interviews();
         interviews.main(new String[]{});
 
         practice = new Practice();
         practice.main(new String[]{});
+
+        testing = new Testing();
+        testing.main(new String[]{});
+
+        tests = new tests();
+        tests.main(new String[]{});
     }
 
     @When("I add {int} and {int}")
