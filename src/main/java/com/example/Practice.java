@@ -120,7 +120,23 @@ public class Practice {
         ois.close();
         System.out.println("Deserialized: " + u2.name + " " + u2.password);
 
+        // OVERRIDING
+        Vehicle vehicle = new Car(); // Reference of Vehicle, object of Car
+        vehicle.drive(); // Outputs: Driving car (resolved at runtime)
+        vehicle = new Vehicle();
+        vehicle.drive();
+    }
+}
 
+class Vehicle {
+    void drive() {
+        System.out.println("Driving vehicle");
+    }
+}
+class Car extends Vehicle {
+    @Override
+    void drive() {
+        System.out.println("Driving car");
     }
 }
 
