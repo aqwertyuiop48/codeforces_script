@@ -1,9 +1,11 @@
 package com.example;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.RunWith;
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 
+@Slf4j
 @RunWith(Cucumber.class)
 @CucumberOptions(
         features = "src/test/resources/com/example",

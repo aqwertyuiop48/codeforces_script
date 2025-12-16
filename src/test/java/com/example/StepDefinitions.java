@@ -4,11 +4,14 @@ import io.cucumber.java.en.*;
 import io.cucumber.java.Before;
 import io.cucumber.java.After;
 import io.cucumber.datatable.DataTable;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.List;
 import static org.junit.Assert.*;
 
+@Slf4j
 public class StepDefinitions {
     private int result;
     private Calculator calculator;
@@ -34,17 +37,15 @@ public class StepDefinitions {
 
     @Given("I am preparing")
     public void i_am_preparing() throws Exception {
-        interviews = new interviews();
-        interviews.main(new String[]{});
 
-        practice = new Practice();
-        practice.main(new String[]{});
-
-        testing = new Testing();
-        testing.main(new String[]{});
-
-        tests = new tests();
-        tests.main(new String[]{});
+        log.info("Lombok log!");
+        new interviews().main(new String[]{});
+        new Practice().main(new String[]{});
+        new Testing().main(new String[]{});
+        new tests().main(new String[]{});
+        new test2().main(new String[]{});
+        new testing_kotlin().main(new String[]{});
+        new A().print();
     }
 
     @When("I add {int} and {int}")

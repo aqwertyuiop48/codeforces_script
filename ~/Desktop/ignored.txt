@@ -1,0 +1,15 @@
+.:  --exclude-dir=1
+./.gitignore:  listed in $Not_Code_Extension{gitignore}
+./.gradle/8.14/checksums/checksums.lock:  language unknown (#3)
+./.gradle/8.14/checksums/md5-checksums.bin:  language unknown (#3)
+./.gradle/8.14/checksums/sha1-checksums.bin:  language unknown (#3)
+./.gradle/8.14/filechanges/last-build.bin:  language unknown (#3)
+./.gradle/8.14/filehashes/filehashes.bin:  language unknown (#3)
+./.gradle/8.14/filehashes/filehashes.lock:  language unknown (#3)
+./.gradle/buildoutputcleanup/buildoutputcleanup.lock:  language unknown (#3)
+./.idea/.gitignore:  listed in $Not_Code_Extension{gitignore}
+./target/maven-status/maven-compiler-plugin/compile/default-compile/createdfiles.lst:  language unknown (#3)
+./target/maven-status/maven-compiler-plugin/compile/default-compile/inputfiles.lst:  language unknown (#3)
+./target/maven-status/maven-compiler-plugin/testcompile/default-testcompile/createdfiles.lst:  language unknown (#3)
+./target/maven-status/maven-compiler-plugin/testcompile/default-testcompile/inputfiles.lst:  language unknown (#3)
+./user.ser:  language unknown (#3)
