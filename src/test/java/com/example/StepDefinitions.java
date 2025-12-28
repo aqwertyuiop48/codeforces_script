@@ -45,6 +45,7 @@ public class StepDefinitions {
         new tests().main(new String[]{});
         new test2().main(new String[]{});
         new testing_kotlin().main(new String[]{});
+        new test3().main(new String[]{});
         new A().print();
     }
 

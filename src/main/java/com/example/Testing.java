@@ -1,5 +1,7 @@
 package com.example;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
 import java.util.stream.*;
 
@@ -63,4 +65,123 @@ public class Testing {
         }
     }
 
+}
+
+class StackUsingQueue implements Iterable<Integer> {
+    Queue<Integer> q1 = new LinkedList<>();
+    Queue<Integer> q2 = new LinkedList<>();
+
+    // Push element onto stack
+    public void push(int x) {
+        q2.add(x);
+
+        while (!q1.isEmpty()) {
+            q2.add(q1.poll());
+        }
+
+        // swap queues
+        Queue<Integer> temp = q1;
+        q1 = q2;
+        q2 = temp;
+    }
+
+    public void pushAll(Collection<Integer> values) {
+        for (int x : values) {
+            push(x);
+        }
+    }
+
+    // Pop element from stack
+    public int pop() {
+        if (q1.isEmpty()) {
+            throw new RuntimeException("Stack is empty");
+        }
+        return q1.poll();
+    }
+
+    public int top() {
+        return q1.peek();
+    }
+
+    public boolean isEmpty() {
+        return q1.isEmpty();
+    }
+
+    public void printStack() {
+        for (int x : q1) {
+            System.out.print(x + " ");
+        }
+        System.out.println();
+    }
+
+    @NotNull
+    @Override
+    public Iterator<Integer> iterator() {
+        return q1.iterator();
+    }
+
+    @Override
+    public String toString() {
+        return "StackUsingQueue{" +
+                "q1=" + q1+
+                '}';
+    }
+}
+
+class QueueUsingStack {
+    private Deque<Integer> in = new ArrayDeque<>();
+    private Deque<Integer> out = new ArrayDeque<>();
+
+    // Enqueue → O(1)
+    public void enqueue(int x) {
+        in.push(x);
+    }
+
+    public void enqueueAll(Collection<Integer> values) {
+        for (int x : values) {
+            enqueue(x);
+        }
+    }
+
+
+    // Dequeue → Amortized O(1)
+    public int dequeue() {
+        if (out.isEmpty()) {
+            while (!in.isEmpty()) {
+                out.push(in.pop());
+            }
+        }
+
+        if (out.isEmpty()) {
+            throw new RuntimeException("Queue is empty");
+        }
+
+        return out.pop();
+    }
+
+    public int peek() {
+        if (out.isEmpty()) {
+            while (!in.isEmpty()) {
+                out.push(in.pop());
+            }
+        }
+
+        if (out.isEmpty()) {
+            throw new RuntimeException("Queue is empty");
+        }
+
+        return out.peek();
+    }
+
+    public boolean isEmpty() {
+        return in.isEmpty() && out.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return "QueueUsingStack{" +
+                "in=" + in +
+                ", out=" + out +
+                '}';
+    }
 }

@@ -1,5 +1,7 @@
 package com.example;
 
+import com.google.common.collect.Collections2;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,6 +10,9 @@ import java.util.stream.IntStream;
 
 public class test2 {
     public static void main(String[] args) throws InterruptedException {
+
+        Collections2.permutations(List.of(1, 2, 3)).forEach(System.out::println);
+        System.out.println(IntStream.range(0,100).boxed().collect(Collectors.toList()));
 
         // Flattened nested list
         System.out.println(Arrays.stream(Arrays.deepToString(
