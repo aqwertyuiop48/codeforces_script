@@ -64,7 +64,15 @@ jobs:
     - name: Run multi-line bash with Maven and java (direct)
       run: |
         mvn exec:exec -Dexec.executable=bash <<'EOF'
-        echo 'System.out.println("Hello, World from /dev/stdin in maven!");' | jshell --startup /dev/stdin
+        (
+          cat <<'EOF1'
+        System.out.println("Hello");
+        int x = 10;
+        System.out.println(x * 2);
+        /exit
+        EOF1
+        ) | jshell -q -
+        exit
         EOF
 
     - name: Run multi-line bash with Maven and java again (direct)
