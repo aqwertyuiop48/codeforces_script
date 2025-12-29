@@ -74,7 +74,9 @@ The serialized byte stream can later be deserialized back into a copy of the ori
 # Ways of executing Java
 
 ## Inline
-- 
+- Maven executable bash : https://github.com/aqwertyuiop48/codeforces_script/blob/java_/.github/workflows/main.yml#L55
+- Maven executable java : https://github.com/aqwertyuiop48/codeforces_script/blob/java_/.github/workflows/main.yml#L61 
 
 ## From file
+- Shebang: https://github.com/aqwertyuiop48/codeforces_script/blob/java_/.github/workflows/main.yml#L41
 - 
