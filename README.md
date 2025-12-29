@@ -70,3 +70,11 @@ The serialized byte stream can later be deserialized back into a copy of the ori
   transient field will NOT be serialized.
 </pre>
 
+
+# Ways of executing Java
+
+## Inline
+- 
+
+## From file
+- 

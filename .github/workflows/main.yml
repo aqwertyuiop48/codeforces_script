@@ -42,3 +42,25 @@ jobs:
       run: |
         chmod +x shebang_job.sh
         java --source 21 shebang_job.sh  1 3 5
+
+    - name: Run multi-line bash with Maven (direct)
+      run: |
+        mvn exec:exec -Dexec.executable=bash <<'EOF'
+        ls -l
+        pwd
+        echo "Multiple commands"
+        date
+        EOF
+
+    - name: Run multi-line bash with Maven and java (direct)
+      run: |
+        mvn exec:exec -Dexec.executable=bash <<'EOF'
+        echo 'System.out.println("Hello, World from /dev/stdin in maven!");' | jshell --startup /dev/stdin
+        EOF
+
+    - name: Run multi-line bash with Maven and java again (direct)
+      run: |
+        mvn exec:exec -Dexec.executable=jshell -Dexec.args="-" <<EOF
+        System.out.println("Hello from jshell!");
+        /exit
+        EOF
