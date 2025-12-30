@@ -79,7 +79,7 @@ The serialized byte stream can later be deserialized back into a copy of the ori
 - Maven executable java : https://github.com/aqwertyuiop48/codeforces_script/blob/java_/.github/workflows/main.yml#L78
 - JShell : https://github.com/aqwertyuiop48/codeforces_script/blob/kotlin_/.github/workflows/main1.yml#L43
 - IJava : https://github.com/aqwertyuiop48/codeforces_script/blob/python_/.github/workflows/main_java.yml#L99
-- Java linux / mac : https://github.com/aqwertyuiop48/codeforces_script/blob/java_/.github/workflows/main.yml#L85
+- Java linux / mac : https://github.com/aqwertyuiop48/codeforces_script/blob/java_/.github/workflows/main.yml#L86
 
 ## From file
 - Shebang: https://github.com/aqwertyuiop48/codeforces_script/blob/java_/.github/workflows/main.yml#L52
@@ -88,3 +88,4 @@ The serialized byte stream can later be deserialized back into a copy of the ori
 - javac and java : https://github.com/aqwertyuiop48/programming_languages/blob/main/.github/workflows/java_mysql.yml#L98
 - gradle : https://github.com/aqwertyuiop48/automated-build-android-app-with-github-action/blob/main/.github/workflows/android-ci-generate-apk-aab-download.yml#L46
 - maven : https://github.com/aqwertyuiop48/programming_languages/blob/main/.github/workflows/spring_boot_API_maven_java_applications.yml#L48
+- JBang: https://github.com/aqwertyuiop48/codeforces_script/blob/java_/.github/workflows/main.yml#L54

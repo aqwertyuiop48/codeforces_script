@@ -51,6 +51,7 @@ jobs:
         jbang -c 'System.out.println(System.getProperty("java.version"));'
         chmod +x shebang_job.sh
         java --source 21 shebang_job.sh  1 3 5
+        jbang Mains.java
 
     - name: Run multi-line bash with Maven (direct)
       run: |
@@ -82,13 +83,13 @@ jobs:
         /exit
         EOF
 
-    - name: Run multi-line bash with linux and mac java
+    - name: Run inline Java with Zsh
+      shell: zsh {0}
       run: |
-        # Linux / macOS
-        java --source 21 <(cat <<'EOF'
+        java --source 21 =(cat <<'EOF'
         class A {
             public static void main(String[] args) {
-                System.out.println("inline");
+                System.out.println("Zsh magic: No manual file cleanup needed!");
             }
         }
         EOF
