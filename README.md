@@ -79,7 +79,7 @@ The serialized byte stream can later be deserialized back into a copy of the ori
 - Maven executable java : https://github.com/aqwertyuiop48/codeforces_script/blob/java_/.github/workflows/main.yml#L78
 - JShell : https://github.com/aqwertyuiop48/codeforces_script/blob/kotlin_/.github/workflows/main1.yml#L43
 - IJava : https://github.com/aqwertyuiop48/codeforces_script/blob/python_/.github/workflows/main_java.yml#L99
-- Java linux / mac : https://github.com/aqwertyuiop48/codeforces_script/blob/java_/.github/workflows/main.yml#L86
+- Java linux / mac : https://github.com/aqwertyuiop48/codeforces_script/blob/java_/.github/workflows/main.yml#L32
 
 ## From file
 - Shebang: https://github.com/aqwertyuiop48/codeforces_script/blob/java_/.github/workflows/main.yml#L52

@@ -28,6 +28,21 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '14'  # Specify the Node.js version you need
+
+    - name: Install Zsh
+      run: sudo apt-get install zsh -y
+
+    - name: Run inline Java with Zsh
+      shell: zsh {0}
+      run: |
+        java --source 21 =(cat <<'EOF'
+        class A {
+            public static void main(String[] args) {
+                System.out.println("Zsh magic: No manual file cleanup needed!");
+            }
+        }
+        EOF
+        )
     
    # https://www.jbang.dev/documentation/jbang/latest/installation.html
     - name: Setup JBang
@@ -82,15 +97,3 @@ jobs:
         System.out.println("Hello from jshell!");
         /exit
         EOF
-
-    - name: Run inline Java with Zsh
-      shell: zsh {0}
-      run: |
-        java --source 21 =(cat <<'EOF'
-        class A {
-            public static void main(String[] args) {
-                System.out.println("Zsh magic: No manual file cleanup needed!");
-            }
-        }
-        EOF
-        )
