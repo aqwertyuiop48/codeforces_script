@@ -81,3 +81,15 @@ jobs:
         System.out.println("Hello from jshell!");
         /exit
         EOF
+
+    - name: Run multi-line bash with linux and mac java
+      run: |
+        # Linux / macOS
+        java --source 21 <(cat <<'EOF'
+        class A {
+            public static void main(String[] args) {
+                System.out.println("inline");
+            }
+        }
+        EOF
+        )
