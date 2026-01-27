@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - swift_  # Trigger on push to master branch
+  workflow_dispatch:
 
 jobs:
   build:
