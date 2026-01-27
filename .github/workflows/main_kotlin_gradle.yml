@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - javac_  # Adjust the branch name as needed
+  workflow_dispatch:
 
 
 jobs:
