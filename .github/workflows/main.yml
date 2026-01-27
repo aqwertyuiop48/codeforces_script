@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - solidity_
+  workflow_dispatch:
 jobs:
   build:
 
