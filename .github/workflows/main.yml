@@ -4,6 +4,7 @@ on:
   push:
     branches: 
       - helidon_kotlin_
+  workflow_dispatch:
 
 jobs:
   build:
