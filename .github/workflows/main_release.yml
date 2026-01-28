@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - python_  # Trigger on pushes to the python_ branch
+  workflow_dispatch:
 
 permissions:
   contents: write  # Required for creating releases and uploading assets

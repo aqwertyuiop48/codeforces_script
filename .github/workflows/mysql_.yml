@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - python_
+  workflow_dispatch:
 
 jobs:
   mysql-job:

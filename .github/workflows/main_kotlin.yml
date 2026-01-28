@@ -3,6 +3,7 @@ name: Kotlin Jupyter Notebook
 on:
   push:
     branches: [ python_ ]
+  workflow_dispatch:
 
 jobs:
   run_notebook:
