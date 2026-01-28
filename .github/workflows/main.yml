@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - pascal_  # or your default branch name
+  workflow_dispatch:
 
 jobs:
   build:
