@@ -3,6 +3,7 @@ name: Run Clojure Hello World
 on:
   push:
     branches: [ clojure_ ]
+  workflow_dispatch:
 
 jobs:
   build:
