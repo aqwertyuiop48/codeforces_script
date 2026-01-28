@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - scala_
+  workflow_dispatch:
 
 jobs:
   build:
