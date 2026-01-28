@@ -5,6 +5,7 @@ on:
     branches:
       - cpp_  # Change this to your default branch
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:

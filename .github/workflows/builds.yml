@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - cpp_
+  workflow_dispatch:
 
 jobs:
   build-run:
