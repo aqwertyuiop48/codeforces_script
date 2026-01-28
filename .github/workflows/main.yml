@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - scilab_
+  workflow_dispatch:
 
 jobs:
   run-with-xvfb:
