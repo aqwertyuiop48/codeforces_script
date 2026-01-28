@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - perl_
+  workflow_dispatch:
 
 jobs:
   perl:
