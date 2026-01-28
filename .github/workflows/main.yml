@@ -5,6 +5,7 @@ on:
     branches:
       - c_sharp
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
