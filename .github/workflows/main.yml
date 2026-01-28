@@ -7,6 +7,8 @@ on:
   pull_request:
     branches:
       - kotlin1_
+  workflow_dispatch:
+
 
 permissions:
   contents: write  # Allows write access to the repository contents

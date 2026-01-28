@@ -5,7 +5,4 @@ src/main/kotlin/com/execute/out
 .idea
 .gradle/
 build/
-target/classes/
-target/kotlin-in-java-1.0-SNAPSHOT.jar
-target/maven-archiver/
-target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+target/
