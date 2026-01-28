@@ -5,6 +5,8 @@ on:
     branches: [ julia_ ]
   pull_request:
     branches: [ julia_ ]
+  workflow_dispatch:
+
 
 jobs:
   build:
