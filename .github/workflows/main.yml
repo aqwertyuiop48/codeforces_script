@@ -4,6 +4,7 @@ on:
   push:
     branches: 
       - helidon_java_
+  workflow_dispatch:
 
 jobs:
   build:
