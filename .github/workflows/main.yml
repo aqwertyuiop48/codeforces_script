@@ -3,6 +3,7 @@ name: Dart CI
 on:
   push:
     branches: [ dart_ ]
+  workflow_dispatch:
 
 jobs:
   build:
