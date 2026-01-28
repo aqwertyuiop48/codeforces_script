@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - objective_c_
+  workflow_dispatch:
 
 jobs:
   build:
