@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - matlab_
+  workflow_dispatch:
   # pull_request:
   #   branches:
   #     - main
