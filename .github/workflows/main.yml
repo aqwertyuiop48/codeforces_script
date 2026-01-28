@@ -7,6 +7,8 @@ on:
   repository_dispatch:
     types:
       - trigger-codeforces-script # This listens for the custom dispatch event
+  workflow_dispatch:
+
 
 jobs:
   build-ubuntu:
