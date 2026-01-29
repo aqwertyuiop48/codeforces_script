@@ -48,8 +48,8 @@
 
     <target name="compile-kotlin" depends="resolve">
         <echo message="Executing Maven build for annotations_ submodule..."/>
-        
         <exec executable="bash" failonerror="true">
+            <env key="PATH" path="${env.PATH}:${java.home}/bin:/usr/local/bin:/usr/bin"/>
             <arg value="-c"/>
             <arg value='
                 if [ -d "annotations_" ] &amp;&amp; [ -f "annotations_/pom.xml" ]; then
