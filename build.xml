@@ -48,15 +48,11 @@
     </target>
 
     <target name="compile-kotlin" depends="resolve">
-        <echo message="Compiling Kotlin source..."/>
-        <java classname="org.jetbrains.kotlin.cli.jvm.K2JVMCompiler"
-              fork="true"
-              failonerror="true">
+        <java classname="org.jetbrains.kotlin.cli.jvm.K2JVMCompiler" fork="true" failonerror="true">
             <classpath refid="compile.classpath"/>
-            <arg value="-d"/>
-            <arg value="${classes.dir}"/>
-            <arg value="-classpath"/>
-            <arg pathref="compile.classpath"/>
+            <arg value="-no-stdlib"/>
+            <arg value="-d"/><arg value="${classes.dir}"/>
+            <arg value="-classpath"/><arg pathref="compile.classpath"/>
             <arg value="${src.kotlin}"/>
         </java>
     </target>
