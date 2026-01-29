@@ -9,8 +9,8 @@
 
         <dependency org="com.google.j2objc" name="j2objc-annotations" rev="2.8"/>
 
-        <dependency org="org.graalvm.sdk" name="graal-sdk" rev="24.0.0"/>
-        <dependency org="org.graalvm.js" name="js" rev="24.0.0"/>
+        <dependency org="org.graalvm.sdk" name="graal-sdk" rev="25.0.0"/>
+        <dependency org="org.graalvm.js" name="js" rev="25.0.0"/>
 
         <dependency org="space.kscience" name="kmath-complex" rev="0.4.2"/>
         <dependency org="space.kscience" name="kmath-complex-jvm" rev="0.4.2"/>
