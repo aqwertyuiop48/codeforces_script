@@ -5,15 +5,16 @@
          xmlns:ivy="antlib:org.apache.ivy.ant">
 
     <property name="compile.release" value="21"/>
-    
+    <property name="kotlin.version" value="2.1.0"/>
+
     <property name="src.java" value="src/main/java"/>
-    <property name="src.kotlin" value="annotations_/src/main/kotlin"/> 
+    <property name="src.kotlin" value="annotations_/src/main/kotlin"/>
 
     <property name="build.dir" value="build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="lib.dir" value="${build.dir}/lib"/>
 
-    <property name="main.class" value="org.example.MainKt"/>
+    <property name="main.class" value="main.java.com.example.MainJava"/>
 
     <path id="ivy.classpath">
         <fileset dir="lib">
@@ -21,9 +22,10 @@
         </fileset>
     </path>
 
-    <taskdef uri="antlib:org.apache.ivy.ant"
-             resource="org/apache/ivy/ant/antlib.xml"
-             classpathref="ivy.classpath"/>
+    <taskdef
+        uri="antlib:org.apache.ivy.ant"
+        resource="org/apache/ivy/ant/antlib.xml"
+        classpathref="ivy.classpath"/>
 
     <path id="compile.classpath">
         <fileset dir="${lib.dir}">
@@ -38,7 +40,6 @@
     <target name="init">
         <mkdir dir="${classes.dir}"/>
         <mkdir dir="${lib.dir}"/>
-        <mkdir dir="${src.java}"/>
     </target>
 
     <target name="resolve" depends="init">
@@ -46,12 +47,23 @@
         <ivy:retrieve pattern="${lib.dir}/[artifact]-[revision]-[type]-[classifier].jar"/>
     </target>
 
-    <target name="compile-java" depends="resolve">
-        <javac srcdir="${src.java}"
-               destdir="${classes.dir}"
-               release="${compile.release}"
-               includeantruntime="false"
-               failonerror="false">
+    <target name="compile-kotlin" depends="resolve">
+        <java classname="org.jetbrains.kotlin.cli.jvm.K2JVMCompiler" fork="true" failonerror="true">
+            <classpath refid="compile.classpath"/>
+            <arg value="-no-stdlib"/>
+            <arg value="-d"/><arg value="${classes.dir}"/>
+            <arg value="-classpath"/><arg pathref="compile.classpath"/>
+            <arg value="${src.kotlin}"/>
+        </java>
+    </target>
+
+    <target name="compile-java" depends="compile-kotlin">
+        <echo message="Compiling Java source (Release ${compile.release})..."/>
+        <javac
+            srcdir="${src.java}"
+            destdir="${classes.dir}"
+            release="${compile.release}"
+            includeantruntime="false">
             <classpath refid="compile.classpath"/>
             <compilerarg value="--enable-preview"/>
         </javac>
@@ -60,14 +72,12 @@
     <target name="compile" depends="compile-java"/>
 
     <target name="run" depends="compile">
-        <echo message="------------------------------------------------"/>
-        <echo message="Running Main Class: ${main.class}"/>
-        <echo message="------------------------------------------------"/>
-        
         <java classname="${main.class}" 
               fork="true" 
-              failonerror="true"
-              inputstring="2"> <classpath>
+              failonerror="true" 
+              inputstring="2">
+            
+            <classpath>
                 <pathelement location="${classes.dir}"/>
                 <path refid="compile.classpath"/>
             </classpath>
@@ -75,9 +85,6 @@
             <jvmarg value="--enable-preview"/>
             <jvmarg value="--add-opens=java.base/java.nio=ALL-UNNAMED"/>
             <jvmarg value="--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"/>
-            
-            <jvmarg value="-Dorg.slf4j.simpleLogger.defaultLogLevel=error"/>
-            <jvmarg value="-Dspark.ui.showConsoleProgress=false"/>
         </java>
     </target>
 

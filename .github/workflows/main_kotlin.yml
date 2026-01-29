@@ -35,54 +35,28 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-          cache: 'maven' # Caches ~/.m2
+          cache: 'maven'
 
-      # --- ANT / IVY SETUP (Robust) ---
-      
-      - name: Cache Ivy Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.ivy2/cache
-          key: ${{ runner.os }}-ivy-${{ hashFiles('ivy.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-ivy-
-
-      - name: Install Ivy
+      - name: Setup Ant and Ivy
         run: |
           mkdir -p lib
-          # We download Ivy 2.5.2 to lib/ so the build.xml can find it
           curl -L https://repo1.maven.org/maven2/org/apache/ivy/ivy/2.5.2/ivy-2.5.2.jar -o lib/ivy-2.5.2.jar
+          # Ant is pre-installed on ubuntu-latest; we just need Ivy in lib/
 
-      - name: Build and Run with Ant (Primary)
-        # This uses the build.xml we just fixed. 
-        # It handles the dependencies and the input "2" automatically.
+      - name: Build with Ant
         run: ant clean run
 
-      # --- MAVEN SETUP (Optional/Secondary) ---
-      # Only runs if you have a valid pom.xml in the root
-
       - name: Build and run with Maven (Root)
-        # The 'continue-on-error' allows the job to pass even if Maven isn't set up yet,
-        # letting you rely on the working Ant build.
-        continue-on-error: true 
         run: |
-          if [ -f "pom.xml" ]; then
-            mvn clean install
-            mvn compile
-            # Passing input '2' to the application via stdin
-            echo "2" | mvn exec:java -Dexec.cleanupDaemonThreads=false
-          else
-            echo "No pom.xml found in root, skipping Maven step."
-          fi
+          mvn clean install
+          mvn compile
+          mvn exec:java <<EOF
+          2
+          EOF
 
-      - name: Build and run with Maven (Annotations Submodule)
-        continue-on-error: true
+      - name: Build and run with Maven (Annotations)
         run: |
-          if [ -d "annotations_" ] && [ -f "annotations_/pom.xml" ]; then
-            cd annotations_
-            mvn clean install
-            mvn compile
-            mvn exec:java
-          else
-             echo "No annotations_ submodule found, skipping."
-          fi
+          cd annotations_
+          mvn clean install
+          mvn compile
+          mvn exec:java
