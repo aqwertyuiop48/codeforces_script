@@ -43,7 +43,7 @@ jobs:
       - name: Install Apache Ant
         run: |
           sudo apt-get update
-          sudo apt-get install -y ant
+          sudo apt-get install -y ant --no-install-recommends
           mkdir -p lib
           curl -L https://repo1.maven.org/maven2/org/apache/ivy/ivy/2.5.2/ivy-2.5.2.jar -o lib/ivy-2.5.2.jar
           ant -version
