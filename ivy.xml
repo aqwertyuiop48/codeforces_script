@@ -8,6 +8,7 @@
         <!-- <dependency org="org.jetbrains.kotlin" name="kotlin-scripting-jsr223" rev="2.1.0"/> -->
 
         <dependency org="com.google.j2objc" name="j2objc-annotations" rev="2.8"/>
+        <dependency org="org.jetbrains.kotlinx" name="kotlinx-coroutines-core-jvm" rev="1.8.0"/>
 
         <dependency org="org.graalvm.sdk" name="graal-sdk" rev="25.0.0"/>
         <dependency org="org.graalvm.js" name="js" rev="25.0.0"/>

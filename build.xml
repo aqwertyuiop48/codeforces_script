@@ -56,12 +56,12 @@
                     <include name="kotlin-compiler-*.jar"/>
                     <include name="kotlin-stdlib-*.jar"/>
                     <include name="kotlin-reflect-*.jar"/>
+                    <include name="kotlinx-coroutines-core-*.jar"/>
                 </fileset>
             </classpath>
             
             <arg value="-no-stdlib"/>
             <arg value="-nowarn"/>
-            
             <arg value="-Xdisable-default-scripting-plugin"/>
             
             <arg value="-d"/><arg value="${classes.dir}"/>
