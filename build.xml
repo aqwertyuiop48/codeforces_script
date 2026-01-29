@@ -46,26 +46,7 @@
         <ivy:retrieve pattern="${lib.dir}/[artifact]-[revision]-[type]-[classifier].jar"/>
     </target>
 
-    <target name="compile-kotlin" depends="resolve">
-        <echo message="Executing Maven build for annotations_ submodule..."/>
-        <exec executable="bash" failonerror="true">
-            <env key="PATH" path="${env.PATH}:${java.home}/bin:/usr/local/bin:/usr/bin"/>
-            <arg value="-c"/>
-            <arg value='
-                if [ -d "annotations_" ] &amp;&amp; [ -f "annotations_/pom.xml" ]; then
-                    echo "Found annotations_ submodule, starting Maven build...";
-                    cd annotations_ &amp;&amp; \
-                    mvn clean install &amp;&amp; \
-                    mvn compile &amp;&amp; \
-                    mvn exec:java;
-                else
-                    echo "No annotations_ submodule found, skipping.";
-                fi
-            '/>
-        </exec>
-    </target>
-
-    <target name="compile-java" depends="compile-kotlin">
+    <target name="compile-java" depends="resolve">
         <javac srcdir="${src.java}"
                destdir="${classes.dir}"
                release="${compile.release}"

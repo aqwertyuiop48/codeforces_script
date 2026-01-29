@@ -1,9 +1,9 @@
 name: Java CI
 
 on:
-  # push:
-  #   branches:
-  #     - javac_
+  push:
+    branches:
+      - javac_
   workflow_dispatch:
 
 jobs:
