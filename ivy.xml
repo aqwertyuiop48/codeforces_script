@@ -3,9 +3,9 @@
     <info organisation="com.example" module="kotlin-in-java"/>
 
     <dependencies>
-        <dependency org="org.jetbrains.kotlin" name="kotlin-compiler" rev="2.1.0"/>
+        <dependency org="org.jetbrains.kotlin" name="kotlin-compiler-embeddable" rev="2.1.0"/>
         <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib" rev="2.1.0"/>
-        <!-- <dependency org="org.jetbrains.kotlin" name="kotlin-scripting-jsr223" rev="2.1.0"/> -->
+        <dependency org="org.jetbrains.kotlin" name="kotlin-reflect" rev="2.1.0"/>
 
         <dependency org="com.google.j2objc" name="j2objc-annotations" rev="2.8"/>
         <dependency org="org.jetbrains.kotlinx" name="kotlinx-coroutines-core-jvm" rev="1.8.0"/>
@@ -15,11 +15,9 @@
 
         <dependency org="space.kscience" name="kmath-complex" rev="0.4.2"/>
         <dependency org="space.kscience" name="kmath-complex-jvm" rev="0.4.2"/>
-
         <dependency org="io.reactivex.rxjava3" name="rxjava" rev="3.1.8"/>
 
         <dependency org="com.google.guava" name="guava" rev="33.0.0-jre"/>
-
         <dependency org="com.google.errorprone" name="error_prone_annotations" rev="2.23.0"/>
         <dependency org="org.checkerframework" name="checker-qual" rev="3.41.0"/>
         <dependency org="org.jetbrains" name="annotations" rev="24.1.0"/>
@@ -29,7 +27,6 @@
 
         <dependency org="org.apache.spark" name="spark-core_2.13" rev="3.5.0"/>
         <dependency org="org.apache.spark" name="spark-sql_2.13" rev="3.5.0"/>
-        
         <dependency org="mysql" name="mysql-connector-java" rev="8.0.33"/>
     </dependencies>
 </ivy-module>
