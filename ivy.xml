@@ -5,7 +5,7 @@
     <dependencies>
         <dependency org="org.jetbrains.kotlin" name="kotlin-compiler" rev="2.1.0"/>
         <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib" rev="2.1.0"/>
-        <dependency org="org.jetbrains.kotlin" name="kotlin-scripting-jsr223" rev="2.1.0"/>
+        <!-- <dependency org="org.jetbrains.kotlin" name="kotlin-scripting-jsr223" rev="2.1.0"/> -->
 
         <dependency org="com.google.j2objc" name="j2objc-annotations" rev="2.8"/>
 

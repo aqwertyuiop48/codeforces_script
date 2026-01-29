@@ -49,15 +49,26 @@
     <target name="compile-kotlin" depends="resolve">
         <echo message="Compiling Kotlin source from ${src.kotlin}..."/>
         <java classname="org.jetbrains.kotlin.cli.jvm.K2JVMCompiler" 
-              fork="true" 
-              failonerror="true">
-            <classpath refid="compile.classpath"/>
+            fork="true" 
+            failonerror="true">
+            <classpath>
+                <fileset dir="${lib.dir}">
+                    <include name="kotlin-compiler-*.jar"/>
+                    <include name="kotlin-stdlib-*.jar"/>
+                    <include name="kotlin-reflect-*.jar"/>
+                </fileset>
+            </classpath>
             
             <arg value="-no-stdlib"/>
             <arg value="-nowarn"/>
             
+            <arg value="-Xdisable-default-scripting-plugin"/>
+            
             <arg value="-d"/><arg value="${classes.dir}"/>
-            <arg value="-classpath"/><arg pathref="compile.classpath"/>
+            
+            <arg value="-classpath"/>
+            <arg pathref="compile.classpath"/>
+            
             <arg value="${src.kotlin}"/>
         </java>
     </target>
