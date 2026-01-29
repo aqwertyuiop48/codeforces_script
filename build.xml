@@ -4,10 +4,7 @@
          basedir="."
          xmlns:ivy="antlib:org.apache.ivy.ant">
 
-    <!-- ===================== -->
-    <!-- Properties -->
-    <!-- ===================== -->
-    <property name="java.version" value="17"/>
+    <property name="compile.release" value="21"/>
     <property name="kotlin.version" value="2.1.0"/>
 
     <property name="src.java" value="src/main/java"/>
@@ -19,9 +16,6 @@
 
     <property name="main.class" value="main.java.com.example.MainJava"/>
 
-    <!-- ===================== -->
-    <!-- Ivy setup -->
-    <!-- ===================== -->
     <path id="ivy.classpath">
         <fileset dir="lib">
             <include name="ivy-*.jar"/>
@@ -33,18 +27,12 @@
         resource="org/apache/ivy/ant/antlib.xml"
         classpathref="ivy.classpath"/>
 
-    <!-- ===================== -->
-    <!-- Compile classpath -->
-    <!-- ===================== -->
     <path id="compile.classpath">
         <fileset dir="${lib.dir}">
             <include name="**/*.jar"/>
         </fileset>
     </path>
 
-    <!-- ===================== -->
-    <!-- Targets -->
-    <!-- ===================== -->
     <target name="clean">
         <delete dir="${build.dir}"/>
     </target>
@@ -54,61 +42,49 @@
         <mkdir dir="${lib.dir}"/>
     </target>
 
-    <!-- ===================== -->
-    <!-- Resolve dependencies -->
-    <!-- ===================== -->
     <target name="resolve" depends="init">
         <ivy:resolve/>
         <ivy:retrieve pattern="${lib.dir}/[artifact]-[revision]-[type]-[classifier].jar"/>
     </target>
 
-    <!-- ===================== -->
-    <!-- Kotlin compilation -->
-    <!-- ===================== -->
     <target name="compile-kotlin" depends="resolve">
+        <echo message="Compiling Kotlin source..."/>
         <java classname="org.jetbrains.kotlin.cli.jvm.K2JVMCompiler"
               fork="true"
               failonerror="true">
             <classpath refid="compile.classpath"/>
-
             <arg value="-d"/>
             <arg value="${classes.dir}"/>
-
             <arg value="-classpath"/>
             <arg pathref="compile.classpath"/>
-
             <arg value="${src.kotlin}"/>
         </java>
     </target>
 
-    <!-- ===================== -->
-    <!-- Java compilation -->
-    <!-- ===================== -->
     <target name="compile-java" depends="compile-kotlin">
+        <echo message="Compiling Java source (Release ${compile.release})..."/>
         <javac
             srcdir="${src.java}"
             destdir="${classes.dir}"
-            release="${java.version}"
+            release="${compile.release}"
             includeantruntime="false">
             <classpath refid="compile.classpath"/>
+            <compilerarg value="--enable-preview"/>
         </javac>
     </target>
 
     <target name="compile" depends="compile-java"/>
 
-    <!-- ===================== -->
-    <!-- Run -->
-    <!-- ===================== -->
     <target name="run" depends="compile">
         <java classname="${main.class}" fork="true" failonerror="true">
             <classpath>
                 <pathelement location="${classes.dir}"/>
                 <path refid="compile.classpath"/>
             </classpath>
-
             <jvmarg value="--enable-preview"/>
             <jvmarg value="--add-opens=java.base/java.nio=ALL-UNNAMED"/>
             <jvmarg value="--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"/>
+            <inputstring>2</inputstring>
         </java>
     </target>
 

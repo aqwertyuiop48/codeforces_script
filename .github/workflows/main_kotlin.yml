@@ -30,49 +30,23 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v4
 
-      # --------------------
-      # Set up Java 21 (Temurin)
-      # --------------------
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
+          cache: 'maven'
 
-      # --------------------
-      # Install Ant + Ivy
-      # --------------------
-      - name: Install Apache Ant
+      - name: Setup Ant and Ivy
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ant --no-install-recommends
           mkdir -p lib
-          curl -L https://repo1.maven.org/maven2/org/apache/ivy/ivy/2.5.2/ivy-2.5.2.jar \
-            -o lib/ivy-2.5.2.jar
+          curl -L https://repo1.maven.org/maven2/org/apache/ivy/ivy/2.5.2/ivy-2.5.2.jar -o lib/ivy-2.5.2.jar
+          # Ant is pre-installed on ubuntu-latest; we just need Ivy in lib/
 
-      # --------------------
-      # Verify Java used by Ant
-      # --------------------
-      - name: Verify Java toolchain
-        run: |
-          export PATH="$JAVA_HOME/bin:$PATH"
-          echo "JAVA_HOME=$JAVA_HOME"
-          java -version
-          javac -version
-          ant -diagnostics | grep java.home
-
-      # --------------------
-      # Ant build
-      # --------------------
       - name: Build with Ant
-        run: |
-          export PATH="$JAVA_HOME/bin:$PATH"
-          ant clean run
+        run: ant clean run
 
-      # --------------------
-      # Maven build (root project)
-      # --------------------
-      - name: Build and run with Maven
+      - name: Build and run with Maven (Root)
         run: |
           mvn clean install
           mvn compile
@@ -80,12 +54,9 @@ jobs:
           2
           EOF
 
-      # --------------------
-      # Maven build (annotations_)
-      # --------------------
-      - name: Build Kotlin annotations and run with Maven
+      - name: Build and run with Maven (Annotations)
         run: |
           cd annotations_
           mvn clean install
-          mvn clean compile
+          mvn compile
           mvn exec:java
