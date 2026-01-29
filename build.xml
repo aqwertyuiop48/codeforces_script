@@ -59,7 +59,7 @@
     <!-- ===================== -->
     <target name="resolve" depends="init">
         <ivy:resolve/>
-        <ivy:retrieve pattern="${lib.dir}/[artifact]-[revision].jar"/>
+        <ivy:retrieve pattern="${lib.dir}/[artifact]-[revision]-[type]-[classifier].jar"/>
     </target>
 
     <!-- ===================== -->
