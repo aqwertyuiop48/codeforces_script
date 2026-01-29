@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="kotlin-in-java" default="run" basedir=".">
+
+    <!-- ===================== -->
+    <!-- Properties -->
+    <!-- ===================== -->
+    <property name="java.version" value="21"/>
+    <property name="kotlin.version" value="1.9.24"/>
+
+    <property name="src.java" value="src/main/java"/>
+    <property name="src.kotlin" value="src/main/kotlin"/>
+
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="lib.dir" value="${build.dir}/lib"/>
+
+    <property name="main.class" value="main.java.com.example.MainJava"/>
+
+    <!-- ===================== -->
+    <!-- Ivy -->
+    <!-- ===================== -->
+    <path id="ivy.classpath">
+        <fileset dir="lib">
+            <include name="ivy-*.jar"/>
+        </fileset>
+    </path>
+
+    <taskdef
+        resource="org/apache/ivy/ant/antlib.xml"
+        classpathref="ivy.classpath"/>
+
+    <!-- ===================== -->
+    <!-- Classpath -->
+    <!-- ===================== -->
+    <path id="compile.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- ===================== -->
+    <!-- Targets -->
+    <!-- ===================== -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="init">
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${lib.dir}"/>
+    </target>
+
+    <target name="resolve" depends="init">
+        <ivy:resolve/>
+        <ivy:retrieve pattern="${lib.dir}/[artifact]-[revision].jar"/>
+    </target>
+
+    <!-- ===================== -->
+    <!-- Kotlin Compile -->
+    <!-- ===================== -->
+    <target name="compile-kotlin" depends="resolve">
+        <java classname="org.jetbrains.kotlin.cli.jvm.K2JVMCompiler"
+              fork="true"
+              failonerror="true">
+            <classpath refid="compile.classpath"/>
+            <arg value="-d"/>
+            <arg value="${classes.dir}"/>
+            <arg value="-classpath"/>
+            <arg pathref="compile.classpath"/>
+            <arg value="${src.kotlin}"/>
+        </java>
+    </target>
+
+    <!-- ===================== -->
+    <!-- Java Compile -->
+    <!-- ===================== -->
+    <target name="compile-java" depends="compile-kotlin">
+        <javac
+            srcdir="${src.java}"
+            destdir="${classes.dir}"
+            release="${java.version}"
+            includeantruntime="false">
+            <classpath refid="compile.classpath"/>
+        </javac>
+    </target>
+
+    <target name="compile" depends="compile-java"/>
+
+    <!-- ===================== -->
+    <!-- Run -->
+    <!-- ===================== -->
+    <target name="run" depends="compile">
+        <java classname="${main.class}" fork="true" failonerror="true">
+            <classpath>
+                <pathelement location="${classes.dir}"/>
+                <path refid="compile.classpath"/>
+            </classpath>
+
+            <jvmarg value="--enable-preview"/>
+            <jvmarg value="--add-opens=java.base/java.nio=ALL-UNNAMED"/>
+            <jvmarg value="--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"/>
+        </java>
+    </target>
+
+</project>

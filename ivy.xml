@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0">
+    <info organisation="com.example" module="kotlin-in-java"/>
+
+    <dependencies>
+        <!-- Kotlin -->
+        <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib" rev="1.9.24"/>
+        <dependency org="org.jetbrains.kotlin" name="kotlin-scripting-jsr223" rev="1.9.24"/>
+
+        <!-- GraalVM -->
+        <dependency org="org.graalvm.sdk" name="graal-sdk" rev="25.0.0"/>
+        <dependency org="org.graalvm.js" name="js" rev="25.0.0"/>
+
+        <!-- Math -->
+        <dependency org="space.kscience" name="kmath-complex" rev="0.4.2"/>
+        <dependency org="space.kscience" name="kmath-complex-jvm" rev="0.4.2"/>
+
+        <!-- RxJava -->
+        <dependency org="io.reactivex.rxjava3" name="rxjava" rev="3.1.8"/>
+
+        <!-- Guava -->
+        <dependency org="com.google.guava" name="guava" rev="33.0.0-jre"/>
+
+        <!-- Annotations -->
+        <dependency org="com.google.errorprone" name="error_prone_annotations" rev="2.23.0"/>
+        <dependency org="org.checkerframework" name="checker-qual" rev="3.41.0"/>
+        <dependency org="org.jetbrains" name="annotations" rev="24.1.0"/>
+
+        <!-- Testing -->
+        <dependency org="junit" name="junit" rev="4.13.1"/>
+
+        <!-- Spark -->
+        <dependency org="org.apache.spark" name="spark-core_2.13" rev="4.0.0"/>
+        <dependency org="org.apache.spark" name="spark-sql_2.13" rev="4.0.0"/>
+        <dependency org="org.apache.spark" name="spark-network-common_2.13" rev="4.0.0"/>
+        <dependency org="org.apache.spark" name="spark-unsafe_2.13" rev="4.0.0"/>
+
+        <!-- MySQL -->
+        <dependency org="mysql" name="mysql-connector-java" rev="8.0.33"/>
+    </dependencies>
+</ivy-module>
