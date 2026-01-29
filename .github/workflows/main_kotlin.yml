@@ -62,7 +62,7 @@ jobs:
           ant -diagnostics | grep java.home
 
       # --------------------
-      # Ant build (Java 21 forced)
+      # Ant build
       # --------------------
       - name: Build with Ant
         run: |
