@@ -4,8 +4,8 @@
 
     <dependencies>
         <!-- Kotlin -->
-        <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib" rev="1.9.24"/>
-        <dependency org="org.jetbrains.kotlin" name="kotlin-scripting-jsr223" rev="1.9.24"/>
+        <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib" rev="2.1.0"/>
+        <dependency org="org.jetbrains.kotlin" name="kotlin-scripting-jsr223" rev="2.1.0"/>
 
         <!-- GraalVM -->
         <dependency org="org.graalvm.sdk" name="graal-sdk" rev="25.0.0"/>
