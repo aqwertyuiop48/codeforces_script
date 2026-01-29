@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="kotlin-in-java" default="run" basedir=".">
+<project name="kotlin-in-java"
+         default="run"
+         basedir="."
+         xmlns:ivy="antlib:org.apache.ivy.ant">
 
     <!-- ===================== -->
     <!-- Properties -->
@@ -17,7 +20,7 @@
     <property name="main.class" value="main.java.com.example.MainJava"/>
 
     <!-- ===================== -->
-    <!-- Ivy -->
+    <!-- Ivy setup -->
     <!-- ===================== -->
     <path id="ivy.classpath">
         <fileset dir="lib">
@@ -26,11 +29,12 @@
     </path>
 
     <taskdef
+        uri="antlib:org.apache.ivy.ant"
         resource="org/apache/ivy/ant/antlib.xml"
         classpathref="ivy.classpath"/>
 
     <!-- ===================== -->
-    <!-- Classpath -->
+    <!-- Compile classpath -->
     <!-- ===================== -->
     <path id="compile.classpath">
         <fileset dir="${lib.dir}">
@@ -50,29 +54,35 @@
         <mkdir dir="${lib.dir}"/>
     </target>
 
+    <!-- ===================== -->
+    <!-- Resolve dependencies -->
+    <!-- ===================== -->
     <target name="resolve" depends="init">
         <ivy:resolve/>
         <ivy:retrieve pattern="${lib.dir}/[artifact]-[revision].jar"/>
     </target>
 
     <!-- ===================== -->
-    <!-- Kotlin Compile -->
+    <!-- Kotlin compilation -->
     <!-- ===================== -->
     <target name="compile-kotlin" depends="resolve">
         <java classname="org.jetbrains.kotlin.cli.jvm.K2JVMCompiler"
               fork="true"
               failonerror="true">
             <classpath refid="compile.classpath"/>
+
             <arg value="-d"/>
             <arg value="${classes.dir}"/>
+
             <arg value="-classpath"/>
             <arg pathref="compile.classpath"/>
+
             <arg value="${src.kotlin}"/>
         </java>
     </target>
 
     <!-- ===================== -->
-    <!-- Java Compile -->
+    <!-- Java compilation -->
     <!-- ===================== -->
     <target name="compile-java" depends="compile-kotlin">
         <javac
