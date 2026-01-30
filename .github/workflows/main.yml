@@ -2,10 +2,10 @@ name: Ruby CI
 
 
 on:
-  push:
-    branches: [ ruby_, main ]
-  pull_request:
-    branches: [ ruby_,main ]
+  # push:
+  #   branches: [ ruby_, main ]
+  # pull_request:
+  #   branches: [ ruby_,main ]
   workflow_dispatch:
     
 

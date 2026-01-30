@@ -1,9 +1,9 @@
 name: Couchbase Example Workflow
 
 on:
- push:
-   branches:
-     - main
+#  push:
+#    branches:
+#      - main
  workflow_dispatch:
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
       - run: docker ps
 
       - name: Wait for Couchbase to fully boot
-        run: sleep 30 
+        run: sleep 10 
 
       - name: Configure Couchbase Cluster & Bucket
         run: |
