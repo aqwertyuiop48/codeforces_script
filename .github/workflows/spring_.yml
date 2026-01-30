@@ -27,7 +27,7 @@ jobs:
       working-directory: ./spring-app
 
     - name: Upload WAR file
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: spring-mvc-war
         # 3. Update Path: Look for the war file inside the subfolder's target
