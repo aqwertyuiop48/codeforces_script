@@ -1,0 +1,51 @@
+name: DynamoDB Example Workflow
+
+on:
+ push:
+   branches:
+     - main
+ workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      dynamodb:
+        image: amazon/dynamodb-local
+        ports:
+          - 8000:8000
+
+    steps:
+      - run: docker ps
+
+      - name: Wait for DynamoDB to initialize
+        run: sleep 5 # DynamoDB local starts very fast
+
+      - name: Create Table, Insert Item, and Scan
+        # 1. We must set fake credentials. DynamoDB Local requires them 
+        # to be present, but it does not validate them against AWS.
+        env:
+          AWS_ACCESS_KEY_ID: "fakeMyKeyId"
+          AWS_SECRET_ACCESS_KEY: "fakeSecretAccessKey"
+          AWS_DEFAULT_REGION: "us-west-2" 
+        run: |
+          # 2. Point the AWS CLI to localhost:8000 using --endpoint-url
+          
+          echo "--- Creating Table ---"
+          aws dynamodb create-table \
+            --table-name Music \
+            --attribute-definitions AttributeName=Artist,AttributeType=S AttributeName=SongTitle,AttributeType=S \
+            --key-schema AttributeName=Artist,KeyType=HASH AttributeName=SongTitle,KeyType=RANGE \
+            --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+            --endpoint-url http://localhost:8000
+
+          echo "--- Inserting Data ---"
+          aws dynamodb put-item \
+            --table-name Music \
+            --item '{"Artist": {"S": "No One You Know"}, "SongTitle": {"S": "Call Me Today"}, "AlbumTitle": {"S": "Somewhat Famous"}}' \
+            --endpoint-url http://localhost:8000
+
+          echo "--- Scanning Data ---"
+          aws dynamodb scan \
+            --table-name Music \
+            --endpoint-url http://localhost:8000
