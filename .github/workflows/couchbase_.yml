@@ -1,0 +1,67 @@
+name: Couchbase Example Workflow
+
+on:
+ push:
+   branches:
+     - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      couchbase:
+        image: couchbase:latest
+        ports:
+          - 8091:8091  # REST/Web Console
+          - 8093:8093  # Query Service (N1QL)
+          - 11210:11210 # Key/Value Service
+        # Couchbase takes a moment to be "web" ready, checking port 8091
+        options: >-
+          --health-cmd "curl -f http://localhost:8091/ui/index.html || exit 1"
+          --health-interval 10s
+          --health-retries 10
+
+    steps:
+      - run: docker ps
+
+      - name: Wait for Couchbase to fully boot
+        run: sleep 30 
+
+      - name: Configure Couchbase Cluster & Bucket
+        run: |
+          # 1. Initialize the Node (Set username/password and services)
+          docker exec ${{ job.services.couchbase.id }} couchbase-cli cluster-init \
+            --cluster-username Administrator \
+            --cluster-password password \
+            --services data,index,query \
+            --cluster-ramsize 1024 \
+            --cluster-index-ramsize 256
+
+          # 2. Create a Bucket (Database)
+          docker exec ${{ job.services.couchbase.id }} couchbase-cli bucket-create \
+            --cluster localhost:8091 \
+            --username Administrator \
+            --password password \
+            --bucket test_bucket \
+            --bucket-type couchbase \
+            --bucket-ramsize 128
+
+          # 3. Wait for bucket to warm up
+          sleep 10
+
+      - name: Create Index and Insert Data (N1QL)
+        run: |
+          # We use 'cbq' (Couchbase Query CLI) for executing SQL++ (N1QL)
+          
+          # Define the query script
+          QUERY_SCRIPT="
+            CREATE PRIMARY INDEX ON \`test_bucket\`;
+            INSERT INTO \`test_bucket\` (KEY, VALUE) VALUES ('user::1', {'name': 'Alice', 'age': 30});
+            INSERT INTO \`test_bucket\` (KEY, VALUE) VALUES ('user::2', {'name': 'Bob', 'age': 25});
+            SELECT * FROM \`test_bucket\`;
+          "
+          
+          # Pipe the script into the docker container's cbq tool
+          echo "$QUERY_SCRIPT" | docker exec -i ${{ job.services.couchbase.id }} \
+            cbq -u Administrator -p password -e "http://localhost:8093"
