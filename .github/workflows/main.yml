@@ -104,5 +104,6 @@ jobs:
             echo "$HOME/.sdkman/candidates/kotlin/current/bin" >> $GITHUB_PATH
             
             # 5. Run your script immediately
+            npm run pystart
             npm run pystartmac
         
