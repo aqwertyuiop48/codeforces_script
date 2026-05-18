@@ -85,6 +85,7 @@ jobs:
           
           # Install Kotlin (Notice the --yes is removed)
           sdk install kotlin
+        shell: zsh {0} # <--- This tells GitHub to run this block in Zsh
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
