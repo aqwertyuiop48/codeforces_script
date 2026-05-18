@@ -63,7 +63,7 @@ jobs:
         run: npm run pystart
 
   build-macos:
-    runs-on: macos-13 # Forces Intel architecture like it was a few months ago
+    runs-on: macos-14 # Forces Intel architecture like it was a few months ago
 
     steps:
       - name: Checkout code
