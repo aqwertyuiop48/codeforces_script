@@ -75,17 +75,13 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Install Kotlin via SDKMAN
+      - name: Install SDKMAN! and Kotlin
+        shell: zsh {0} # <--- Forces the use of Zsh to bypass the Bash 3.2 error
         run: |
-          # The ?rcupdate=false stops SDKMAN from trying to modify bashrc files in a headless runner
-          curl -s "https://get.sdkman.io?rcupdate=false" | bash
-          
-          # Initialize SDKMAN
+          curl -s "https://get.sdkman.io?rcupdate=false" | zsh
           source "$HOME/.sdkman/bin/sdkman-init.sh"
-          
-          # Install Kotlin (Notice the --yes is removed)
           sdk install kotlin
-        shell: zsh {0} # <--- This tells GitHub to run this block in Zsh
+          echo "$HOME/.sdkman/candidates/kotlin/current/bin" >> $GITHUB_PATH
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
