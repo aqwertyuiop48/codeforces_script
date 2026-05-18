@@ -1,7 +1,7 @@
 {
     "validUser": {
       "email": "testusers@test.com",
-      "password": "1234567890"
+      "password": "12345678910"
     },
     "invalidUser": {
       "email": "invalid@test.com",
