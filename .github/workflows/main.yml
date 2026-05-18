@@ -79,7 +79,7 @@ jobs:
         run: |
           curl -s https://get.sdkman.io | bash
           source "$HOME/.sdkman/bin/sdkman-init.sh"
-          sdk install kotlin
+          sdk install kotlin --yes
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
