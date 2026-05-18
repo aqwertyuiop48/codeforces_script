@@ -75,11 +75,16 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Install Kotlin
+      - name: Install Kotlin via SDKMAN
         run: |
-          curl -s https://get.sdkman.io | bash
+          # The ?rcupdate=false stops SDKMAN from trying to modify bashrc files in a headless runner
+          curl -s "https://get.sdkman.io?rcupdate=false" | bash
+          
+          # Initialize SDKMAN
           source "$HOME/.sdkman/bin/sdkman-init.sh"
-          sdk install kotlin --yes
+          
+          # Install Kotlin (Notice the --yes is removed)
+          sdk install kotlin
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
