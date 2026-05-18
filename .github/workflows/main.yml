@@ -75,14 +75,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Install Kotlin
-        run: |
-          curl -s https://get.sdkman.io | bash
-          source "$HOME/.sdkman/bin/sdkman-init.sh"
-          sdk install kotlin
-          # Make Kotlin available for subsequent steps
-          echo "$HOME/.sdkman/candidates/kotlin/current/bin" >> $GITHUB_PATH
-
       - name: Set up Node.js
         uses: actions/setup-node@v4 # Updated to v4
         with:
@@ -91,6 +83,18 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run script
-        run: npm run pystartmac
-         
+      - name: Install Kotlin via SDKMAN
+        shell: zsh {0} # <--- This tells GitHub to run this block in Zsh
+        run: |
+          # 1. Pipe the installer to zsh instead of bash
+          curl -s "https://get.sdkman.io?rcupdate=false" | zsh
+          
+          # 2. Source it using zsh syntax
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
+          
+          # 3. Install kotlin
+          sdk install kotlin
+          echo "$HOME/.sdkman/candidates/kotlin/current/bin" >> $GITHUB_PATH
+
+          npm run pystartmac
+        
