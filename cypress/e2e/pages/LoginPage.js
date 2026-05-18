@@ -28,6 +28,12 @@ class LoginPage extends BasePage{
         this.loginBtn.click()
     }
 
+    loginWithUIAndVerify(email, password) {
+        this.loginWithUI(email, password)
+        // Wait for navigation to account page after successful login
+        cy.url().should('include', 'account/account')
+    }
+
 }
 
 

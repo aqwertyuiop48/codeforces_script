@@ -31,7 +31,7 @@ Cypress.Commands.add('login', () => {
 
     cy.fixture('users.json').then((users) => {
 
-        LoginPage.loginWithUI(users.validUser.email, users.validUser.password);
+        LoginPage.loginWithUIAndVerify(users.validUser.email, users.validUser.password);
     })
 
 })

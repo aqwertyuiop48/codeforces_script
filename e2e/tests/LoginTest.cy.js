@@ -25,7 +25,7 @@ describe("Success and Fail login flow", { tags: ['@Login', '@regression'] }, () 
     it("should login successfully with valid credentials", {tags: '@smoke'}, function () {
 
         LoginPage
-            .loginWithUI(this.users.validUser.email, this.users.validUser.password)
+            .loginWithUIAndVerify(this.users.validUser.email, this.users.validUser.password)
 
         AccountPage.h2Heading
             .should('contains.text', 'My Account');
