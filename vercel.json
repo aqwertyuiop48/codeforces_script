@@ -1,16 +1,4 @@
 {
   "version": 2,
-  "framework": null,
-  "builds": [
-    {
-      "src": "Dockerfile.vercel",
-      "use": "@vercel/docker"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ]
+  "framework": null
 }
