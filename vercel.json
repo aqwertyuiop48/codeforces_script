@@ -1,11 +1,12 @@
 {
   "version": 2,
   "framework": null,
-  "functions": {
-    "**/*": {
-      "runtime": "container"
+  "builds": [
+    {
+      "src": "Dockerfile.vercel",
+      "use": "@vercel/docker"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/(.*)",
