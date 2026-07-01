@@ -1,43 +1,10 @@
-# Step 1: Build stage using Gradle + JDK21
-FROM gradle:8.6.0-jdk21 AS build
-WORKDIR /app
+# Pull your already-built image from Docker Hub
+FROM sreedockerhub19/micronaut-java:latest
 
-# Copy Gradle build files first for caching
-COPY build.gradle settings.gradle gradle.properties ./
-COPY gradlew ./
-COPY gradle gradle
-
-# Make gradlew executable
-RUN chmod +x gradlew
-
-# Pre-fetch dependencies (fail fast if resolution breaks, so no corrupt cache layer)
-RUN ./gradlew dependencies --no-daemon
-
-# Copy full project
-COPY . .
-
-# Make gradlew executable again (COPY . . overwrites permissions)
-RUN chmod +x gradlew
-
-# Build the application with shadowJar and stage the artifact at a fixed path
-RUN ./gradlew shadowJar --no-daemon \
- && cp build/libs/*-all.jar /app/app.jar
-
-# Step 2: Runtime stage using JRE 21
-FROM eclipse-temurin:21-jre
-WORKDIR /app
-
-# Vercel provides a dynamic $PORT at runtime (defaults to 80). 
-# We set a fallback here for local development.
+# Set a fallback port and expose Vercel's dynamic $PORT
 ENV PORT=80
-
-# Copy generated fat JAR (exact path, no wildcard)
-COPY --from=build /app/app.jar app.jar
-
-# Expose the port variable (Vercel will map traffic here)
 EXPOSE $PORT
 
-# Start the application using a shell command to interpret the $PORT variable.
-# Micronaut must be told which port/host to bind to, otherwise it defaults to 8080
-# and Vercel (which routes to $PORT) cannot reach it -> NOT_FOUND.
-CMD ["sh", "-c", "java -Dmicronaut.server.host=0.0.0.0 -Dmicronaut.server.port=${PORT:-80} -jar app.jar"]
+# Start the app, injecting the $PORT variable.
+# (Added both standard and Micronaut-specific port properties to ensure it binds correctly)
+CMD ["sh", "-c", "java -Dserver.port=$PORT -Dmicronaut.server.port=$PORT -jar app.jar"]
