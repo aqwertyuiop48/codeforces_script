@@ -1,10 +1,11 @@
-# Pull your already-built image from Docker Hub
 FROM sreedockerhub19/micronaut-java:latest
 
-# Set a fallback port and expose Vercel's dynamic $PORT
 ENV PORT=80
 EXPOSE $PORT
 
-# Start the app, injecting the $PORT variable.
-# (Added both standard and Micronaut-specific port properties to ensure it binds correctly)
-ENTRYPOINT ["sh", "-c", "java -Dserver.port=$PORT -Dmicronaut.server.port=$PORT -jar app.jar"]
+# Force the PATH just in case it was stripped
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+# Use the absolute path to the Java binary (/opt/java/openjdk/bin/java)
+ENTRYPOINT ["sh", "-c", "/opt/java/openjdk/bin/java -Dserver.port=$PORT -Dmicronaut.server.port=$PORT -jar app.jar"]
