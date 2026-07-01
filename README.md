@@ -26,3 +26,4 @@ Commands to run:
 
 - docker build -t micronaut-java .
 - docker run -p 8080:8080 micronaut-java
+
