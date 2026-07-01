@@ -38,5 +38,6 @@ COPY --from=build /app/app.jar app.jar
 EXPOSE $PORT
 
 # Start the application using a shell command to interpret the $PORT variable.
-# IMPORTANT: See the framework notes below to ensure your app reads this variable.
-CMD ["sh", "-c", "java -jar app.jar"]
+# Micronaut must be told which port/host to bind to, otherwise it defaults to 8080
+# and Vercel (which routes to $PORT) cannot reach it -> NOT_FOUND.
+CMD ["sh", "-c", "java -Dmicronaut.server.host=0.0.0.0 -Dmicronaut.server.port=${PORT:-80} -jar app.jar"]
