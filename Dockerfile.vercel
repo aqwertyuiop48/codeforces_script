@@ -7,4 +7,4 @@ EXPOSE $PORT
 
 # Start the app, injecting the $PORT variable.
 # (Added both standard and Micronaut-specific port properties to ensure it binds correctly)
-CMD ["sh", "-c", "java -Dserver.port=$PORT -Dmicronaut.server.port=$PORT -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=$PORT -Dmicronaut.server.port=$PORT -jar app.jar"]
