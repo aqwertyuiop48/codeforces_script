@@ -13,16 +13,16 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '14' # or any version you prefer
+          node-version: '18' # Node 14 is heavily deprecated; upgrading to 18 guarantees runner compatibility
 
-      - name: Install Elm
+      - name: Install Elm (Pinned Version)
         run: |
-         npm install -g elm
+          npm install -g elm@latest-0.19.1
 
       - name: Run Docker commands through Python
         run: |
@@ -34,27 +34,26 @@ jobs:
 
       - name: Build Elm project
         run: |
-         elm install elm/core && elm install elm/html && elm install elm/browser && elm install hecrj/html-parser
-         elm make src/Main.elm --output=js_/Main.js
-         elm make src/Hello_1.elm --output=js_/Hello_1.js
-         elm make src/Html_2.elm --output=js_/Html_2.js
-         elm make src/Html_3.elm --output=js_/Html_3.js
-         elm make src/Html_iframe.elm --output=js_/Html_iframe.js
-         elm make src/Functions_4.elm --output=js_/Functions_4.js
-         elm make src/Lists_5.elm --output=js_/Lists_5.js
-         elm make src/Conditionals_6.elm --output=js_/Conditionals_6.js
-         elm make src/Strings_7.elm --output=js_/Strings_7.js
-
+          elm install elm/core && elm install elm/html && elm install elm/browser && elm install hecrj/html-parser
+          elm make src/Main.elm --output=js_/Main.js
+          elm make src/Hello_1.elm --output=js_/Hello_1.js
+          elm make src/Html_2.elm --output=js_/Html_2.js
+          elm make src/Html_3.elm --output=js_/Html_3.js
+          elm make src/Html_iframe.elm --output=js_/Html_iframe.js
+          elm make src/Functions_4.elm --output=js_/Functions_4.js
+          elm make src/Lists_5.elm --output=js_/Lists_5.js
+          elm make src/Conditionals_6.elm --output=js_/Conditionals_6.js
+          elm make src/Strings_7.elm --output=js_/Strings_7.js
 
       - name: Upload HTML artifact
         uses: actions/upload-artifact@v4
         with:
           name: elm-artifact
           path: |
-           html_
-           js_
-           ./index.html
-           ./index_1.html
-           ./index_2.html
-           ./index_3.html
-           ./index1.html
+            html_
+            js_
+            ./index.html
+            ./index_1.html
+            ./index_2.html
+            ./index_3.html
+            ./index1.html
