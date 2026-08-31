@@ -23,3 +23,14 @@ jobs:
       - name: Run executable
         run: |
           ./runme
+
+      - name: Build C and C++ part (via G++)
+        run: |
+          g++ -DBUILD_AS_C -x c combo.cpp -o combo_cpp_c.o -c
+          echo "C part compiled successfully with g++ (-x c)."
+          g++ combo.cpp combo_cpp_c.o -o runme_gpp
+          echo "C++ part linked successfully with g++-built object."
+
+      - name: Run executable (G++ build)
+        run: |
+          ./runme_gpp
