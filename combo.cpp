@@ -5,7 +5,7 @@
 #include <iostream>
 
 // Declare the C function with C linkage so C++ can link with it
-extern "C" void cfunc();
+extern "C" void cfunc(void);
 
 int main() {
     std::cout << "Calling C code..." << std::endl;
@@ -21,20 +21,16 @@ int main() {
 #ifdef BUILD_AS_C
 #include <stdio.h>
 
-/*
+/* Forward declarations to prevent implicit declaration errors */
+int main_(void);
+void nested_function(void);
 
-Why the below code is invalid in C++:
-Variable Length Arrays (VLA) are a C99 feature; standard C++ does not support VLAs.
-Compound literals like (int[]){1,2,3} are allowed in C99 but not in C++.
-
-*/
-
-void cfunc() {
+void cfunc(void) {
     main_();
     printf("%d\n", main_());
 }
 
-int main_(){
+int main_(void) {
     // Variable Length Array (VLA) - valid in C99, invalid in standard C++
     int n = 5;
     int arr[n];  // <-- invalid in C++
@@ -59,8 +55,8 @@ int main_(){
     return 0;
 }
 
-void nested_function(){
-    printf("Hello from nested function!");
+void nested_function(void) {
+    printf("Hello from nested function!\n");
 }
 
-#endif
+#endif // BUILD_AS_C
