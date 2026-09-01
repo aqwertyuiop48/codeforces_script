@@ -19,37 +19,52 @@ jobs:
 
       - name: GCC & G++ on combo.cpp
         run: |
-          rm -f *.o runme_*
-          gcc -DBUILD_AS_C -x c combo.cpp -o combo_c.o -c
-          g++ combo.cpp combo_c.o -o runme_gcc_cpp
+          rm -f *.o *.so runme_*
+          gcc -std=c99 -DBUILD_AS_C -x c combo.cpp -o combo_c.o -c
+          g++ -std=c++17 combo.cpp combo_c.o -o runme_gcc_cpp
           ./runme_gcc_cpp
 
       - name: G++ only (with -x c) on combo.cpp
         run: |
-          rm -f *.o runme_*
-          g++ -DBUILD_AS_C -x c combo.cpp -o combo_cpp_c.o -c
-          g++ combo.cpp combo_cpp_c.o -o runme_gpp_cpp
+          rm -f *.o *.so runme_*
+          g++ -std=c99 -DBUILD_AS_C -x c combo.cpp -o combo_cpp_c.o -c
+          g++ -std=c++17 combo.cpp combo_cpp_c.o -o runme_gpp_cpp
           ./runme_gpp_cpp
 
       - name: GCC & G++ on combo.c
         run: |
-          rm -f *.o runme_*
-          gcc -DBUILD_AS_C combo.c -o combo_c_from_c.o -c
-          g++ -x c++ combo.c -x none combo_c_from_c.o -o runme_gcc_c
+          rm -f *.o *.so runme_*
+          gcc -std=c99 -DBUILD_AS_C combo.c -o combo_c_from_c.o -c
+          g++ -std=c++17 -x c++ combo.c -x none combo_c_from_c.o -o runme_gcc_c
           ./runme_gcc_c
 
-      - name: Pure GCC Driver Only (-lstdc++) on combo.cpp & combo.c
+      - name: G++ only on combo.c
         run: |
-          rm -f *.o runme_*
-          # Pure gcc on combo.cpp
-          gcc -DBUILD_AS_C -x c combo.cpp -o pure_gcc_c.o -c
-          gcc -x c++ combo.cpp -x none pure_gcc_c.o -lstdc++ -o runme_pure_gcc_cpp
+          rm -f *.o *.so runme_*
+          g++ -std=c99 -DBUILD_AS_C -x c combo.c -o combo_gpp_c_from_c.o -c
+          g++ -std=c++17 -x c++ combo.c -x none combo_gpp_c_from_c.o -o runme_gpp_c
+          ./runme_gpp_c
+
+      - name: Pure GCC Driver Only (-lstdc++) on combo.cpp
+        run: |
+          rm -f *.o *.so runme_*
+          gcc -std=c99 -DBUILD_AS_C -x c combo.cpp -o pure_gcc_c.o -c
+          gcc -std=c++17 -x c++ combo.cpp -x none pure_gcc_c.o -lstdc++ -o runme_pure_gcc_cpp
           ./runme_pure_gcc_cpp
 
-          # Pure gcc on combo.c
-          gcc -DBUILD_AS_C combo.c -o pure_gcc_c_from_c.o -c
-          gcc -x c++ combo.c -x none pure_gcc_c_from_c.o -lstdc++ -o runme_pure_gcc_c
+      - name: Pure GCC Driver Only (-lstdc++) on combo.c
+        run: |
+          rm -f *.o *.so runme_*
+          gcc -std=c99 -DBUILD_AS_C combo.c -o pure_gcc_c_from_c.o -c
+          gcc -std=c++17 -x c++ combo.c -x none pure_gcc_c_from_c.o -lstdc++ -o runme_pure_gcc_c
           ./runme_pure_gcc_c
+
+      - name: GCC Dynamic Shared Library (.so) Linking
+        run: |
+          rm -f *.o *.so runme_*
+          gcc -std=c99 -DBUILD_AS_C -fPIC -x c combo.cpp -shared -o libcombo_c.so
+          g++ -std=c++17 combo.cpp -L. -lcombo_c -Wl,-rpath,. -o runme_gcc_so
+          ./runme_gcc_so
 
       # =========================================================
       # 2. CLANG & CLANG++ PIPELINES
@@ -57,34 +72,49 @@ jobs:
 
       - name: Clang & Clang++ on combo.cpp
         run: |
-          rm -f *.o runme_*
-          clang -DBUILD_AS_C -x c combo.cpp -o clang_c.o -c
-          clang++ combo.cpp clang_c.o -o runme_clang_cpp
+          rm -f *.o *.so runme_*
+          clang -std=c99 -DBUILD_AS_C -x c combo.cpp -o clang_c.o -c
+          clang++ -std=c++17 combo.cpp clang_c.o -o runme_clang_cpp
           ./runme_clang_cpp
 
       - name: Clang++ only (with -x c) on combo.cpp
         run: |
-          rm -f *.o runme_*
-          clang++ -DBUILD_AS_C -x c combo.cpp -o clangpp_c.o -c
-          clang++ combo.cpp clangpp_c.o -o runme_clangpp_cpp
+          rm -f *.o *.so runme_*
+          clang++ -std=c99 -DBUILD_AS_C -x c combo.cpp -o clangpp_c.o -c
+          clang++ -std=c++17 combo.cpp clangpp_c.o -o runme_clangpp_cpp
           ./runme_clangpp_cpp
-
-      - name: Pure Clang Driver Only (-lstdc++) on combo.cpp & combo.c
-        run: |
-          rm -f *.o runme_*
-          # Pure clang on combo.cpp
-          clang -DBUILD_AS_C -x c combo.cpp -o pure_clang_c.o -c
-          clang -x c++ combo.cpp -x none pure_clang_c.o -lstdc++ -o runme_pure_clang_cpp
-          ./runme_pure_clang_cpp
-
-          # Pure clang on combo.c
-          clang -DBUILD_AS_C combo.c -o pure_clang_c_from_c.o -c
-          clang -x c++ combo.c -x none pure_clang_c_from_c.o -lstdc++ -o runme_pure_clang_c
-          ./runme_pure_clang_c
 
       - name: Clang & Clang++ on combo.c
         run: |
-          rm -f *.o runme_*
-          clang -DBUILD_AS_C combo.c -o clang_c_from_c.o -c
-          clang++ -x c++ combo.c -x none clang_c_from_c.o -o runme_clang_c
+          rm -f *.o *.so runme_*
+          clang -std=c99 -DBUILD_AS_C combo.c -o clang_c_from_c.o -c
+          clang++ -std=c++17 -x c++ combo.c -x none clang_c_from_c.o -o runme_clang_c
           ./runme_clang_c
+
+      - name: Clang++ only on combo.c
+        run: |
+          rm -f *.o *.so runme_*
+          clang++ -std=c99 -DBUILD_AS_C -x c combo.c -o clangpp_c_from_c.o -c
+          clang++ -std=c++17 -x c++ combo.c -x none clangpp_c_from_c.o -o runme_clangpp_c
+          ./runme_clangpp_c
+
+      - name: Pure Clang Driver Only (-lstdc++) on combo.cpp
+        run: |
+          rm -f *.o *.so runme_*
+          clang -std=c99 -DBUILD_AS_C -x c combo.cpp -o pure_clang_c.o -c
+          clang -std=c++17 -x c++ combo.cpp -x none pure_clang_c.o -lstdc++ -o runme_pure_clang_cpp
+          ./runme_pure_clang_cpp
+
+      - name: Pure Clang Driver Only (-lstdc++) on combo.c
+        run: |
+          rm -f *.o *.so runme_*
+          clang -std=c99 -DBUILD_AS_C combo.c -o pure_clang_c_from_c.o -c
+          clang -std=c++17 -x c++ combo.c -x none pure_clang_c_from_c.o -lstdc++ -o runme_pure_clang_c
+          ./runme_pure_clang_c
+
+      - name: Clang Dynamic Shared Library (.so) Linking
+        run: |
+          rm -f *.o *.so runme_*
+          clang -std=c99 -DBUILD_AS_C -fPIC -x c combo.cpp -shared -o libcombo_clang_c.so
+          clang++ -std=c++17 combo.cpp -L. -lcombo_clang_c -Wl,-rpath,. -o runme_clang_so
+          ./runme_clang_so
