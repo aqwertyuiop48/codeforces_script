@@ -19,15 +19,17 @@ COPY . .
 
 RUN chmod +x gradlew
 
-# Build the fat jar
-RUN ./gradlew clean shadowJar --no-daemon
+# Restrict Gradle memory/daemon, build fat jar, and stage to a fixed path
+ENV GRADLE_OPTS="-Xmx1024m -Dorg.gradle.daemon=false"
+RUN ./gradlew clean shadowJar -x test --no-daemon \
+ && cp build/libs/*-all.jar /app/app.jar
 
 # Step 2: Runtime stage
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-# Copy the generated fat jar from the build stage
-COPY --from=build /app/build/libs/*-all.jar app.jar
+# Copy the static, pre-resolved fat jar (no wildcards, preventing Back4App/Render path mismatch)
+COPY --from=build /app/app.jar app.jar
 
 ENV PORT=8080
 EXPOSE 8080
