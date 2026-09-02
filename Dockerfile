@@ -2,32 +2,32 @@
 FROM gradle:8.6.0-jdk21 AS build
 WORKDIR /app
 
-# Copy Gradle build files and wrapper first for caching
-COPY build.gradle settings.gradle gradle.properties ./
+# Copy Gradle build files first for caching
+COPY build.gradle.kts settings.gradle.kts gradle.properties ./
 COPY gradlew ./
 COPY gradle gradle
 
-# Make gradlew executable before running any commands
+# Make gradlew executable AFTER copying it
 RUN chmod +x gradlew
 
-# Copy full project source
+# Download dependencies (skip error if not all appear)
+RUN ./gradlew dependencies --no-daemon || true
+
+# Copy full project
 COPY . .
 
-# Ensure gradlew retains execution permissions after copying all files
+# Ensure gradlew is still executable after copying everything
 RUN chmod +x gradlew
 
-# Restrict Gradle memory, disable daemon, build shadowJar, and copy to fixed path
-ENV GRADLE_OPTS="-Xmx1024m -Dorg.gradle.daemon=false"
-RUN ./gradlew shadowJar -x test --no-daemon \
- && cp build/libs/*-all.jar /app/app.jar
+# Build the application with shadowJar
+RUN ./gradlew shadowJar --no-daemon
 
 # Step 2: Runtime stage using JRE 21
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-# Copy generated fat JAR (exact path, no wildcard)
-COPY --from=build /app/app.jar app.jar
+# Copy generated fat JAR
+COPY --from=build /app/build/libs/*-all.jar app.jar
 
-ENV PORT=8080
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
