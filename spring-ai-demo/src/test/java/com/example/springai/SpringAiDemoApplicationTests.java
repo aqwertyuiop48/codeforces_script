@@ -17,7 +17,7 @@ class SpringAiDemoApplicationTests {
     @Test
     void contextLoadsAndFreeModelsAreConfigured() {
         assertThat(props.providers()).containsKeys("openai", "gemini");
-        assertThat(props.providers().get("gemini").models()).contains("gemini-2.5-flash", "gemini-2.5-flash-lite");
+        assertThat(props.providers().get("gemini").models()).contains("gemini-3.5-flash", "gemini-3.5-flash-lite");
         assertThat(props.providers().get("openai").hasKey()).isFalse();
     }
 }

@@ -13,9 +13,9 @@ Reactive Spring Boot 3.5 + Spring AI 1.0 app that asks OpenAI and Gemini models 
     mvn spring-boot:run
 
     curl localhost:8080/api/models
-    curl "localhost:8080/api/chat?provider=gemini&model=gemini-2.5-flash&prompt=how%20are%20you"
+    curl "localhost:8080/api/chat?provider=gemini&model=gemini-3.5-flash&prompt=how%20are%20you"
     curl "localhost:8080/api/chat/all"
-    curl -N "localhost:8080/api/chat/stream?provider=gemini&model=gemini-2.5-flash"
+    curl -N "localhost:8080/api/chat/stream?provider=gemini&model=gemini-3.5-flash"
 
 A provider with no key is reported as "not configured"; the app still starts.
 

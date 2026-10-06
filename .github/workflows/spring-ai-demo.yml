@@ -1,14 +1,14 @@
 name: Spring AI Demo
 
 on:
-  push:
-    paths:
-      - 'spring-ai-demo/**'
-      - '.github/workflows/spring-ai-demo.yml'
-  pull_request:
-    paths:
-      - 'spring-ai-demo/**'
-      - '.github/workflows/spring-ai-demo.yml'
+  # push:
+  #   paths:
+  #     - 'spring-ai-demo/**'
+  #     - '.github/workflows/spring-ai-demo.yml'
+  # pull_request:
+  #   paths:
+  #     - 'spring-ai-demo/**'
+  #     - '.github/workflows/spring-ai-demo.yml'
   workflow_dispatch:
 
 permissions:
