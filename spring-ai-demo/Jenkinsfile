@@ -1,0 +1,35 @@
+// Declarative Jenkins pipeline. Needs Docker on the agent (Testcontainers + image build) and two
+// "Secret text" credentials: openai-api-key, gemini-api-key.
+pipeline {
+    agent any
+    options { timestamps(); timeout(time: 30, unit: 'MINUTES') }
+    environment {
+        IMAGE = "spring-ai-demo:${env.BUILD_NUMBER}"
+    }
+    stages {
+        stage('Unit tests') {
+            steps { sh 'mvn -B test' }
+            post { always { junit 'target/surefire-reports/*.xml' } }
+        }
+        stage('Integration tests (Testcontainers)') {
+            steps { sh 'mvn -B verify -DskipTests=false' }
+            post { always { junit allowEmptyResults: true, testResults: 'target/failsafe-reports/*.xml' } }
+        }
+        stage('Docker image') {
+            steps { sh 'docker build -t $IMAGE .' }
+        }
+        stage('Smoke test') {
+            steps {
+                withCredentials([string(credentialsId: 'openai-api-key', variable: 'OPENAI_API_KEY'),
+                                 string(credentialsId: 'gemini-api-key', variable: 'GEMINI_API_KEY')]) {
+                    sh '''
+                        docker run -d --name demo-$BUILD_NUMBER -p 18080:8080 -e OPENAI_API_KEY -e GEMINI_API_KEY $IMAGE
+                        for i in $(seq 1 40); do curl -sf localhost:18080/actuator/health && break; sleep 2; done
+                        curl -sf --max-time 120 "localhost:18080/api/ask?question=how%20long%20does%20shipping%20take"
+                    '''
+                }
+            }
+            post { always { sh 'docker rm -f demo-$BUILD_NUMBER || true' } }
+        }
+    }
+}

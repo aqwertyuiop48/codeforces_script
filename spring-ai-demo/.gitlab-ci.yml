@@ -1,0 +1,41 @@
+# GitLab CI equivalent of the GitHub Actions workflow. Set OPENAI_API_KEY / GEMINI_API_KEY as masked CI/CD variables.
+stages: [test, package]
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+cache:
+  paths: [.m2/repository]
+
+unit-tests:
+  stage: test
+  image: maven:3.9-eclipse-temurin-21
+  script: mvn -B test
+  artifacts:
+    when: always
+    reports:
+      junit: target/surefire-reports/*.xml
+
+integration-tests:
+  stage: test
+  image: maven:3.9-eclipse-temurin-21
+  services: [docker:27-dind]
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    TESTCONTAINERS_HOST_OVERRIDE: docker
+  script: mvn -B verify
+  artifacts:
+    when: always
+    reports:
+      junit: target/failsafe-reports/*.xml
+
+docker-image:
+  stage: package
+  image: docker:27
+  services: [docker:27-dind]
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

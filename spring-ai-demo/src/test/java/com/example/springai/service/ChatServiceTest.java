@@ -48,7 +48,18 @@ class ChatServiceTest {
     }
 
     private final FakeGateway gateway = new FakeGateway();
-    private final ChatService service = new ChatService(gateway, PROPS);
+    private final java.util.List<ChatReply> published = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private final ChatService service = new ChatService(gateway, PROPS, reply -> {
+        published.add(reply);
+        return Mono.empty();
+    });
+
+    @Test
+    void chatPublishesAnEventForEveryCall() {
+        StepVerifier.create(service.chat("openai", "gpt-a", "hi")).expectNextCount(1).verifyComplete();
+        assertThat(published).hasSize(1);
+        assertThat(published.get(0).model()).isEqualTo("gpt-a");
+    }
 
     @Test
     void chatReturnsAnswerAndRendersTemplate() {

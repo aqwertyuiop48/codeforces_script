@@ -1,0 +1,43 @@
+name: java-ai-agent-scratch
+
+on:
+  push:
+    paths:
+      - "java-ai-agent-scratch/**"
+      - ".github/workflows/java-ai-agent-scratch.yml"
+  pull_request:
+    paths:
+      - "java-ai-agent-scratch/**"
+  workflow_dispatch:
+
+jobs:
+  build-test-run:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: java-ai-agent-scratch
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+          cache-dependency-path: java-ai-agent-scratch/pom.xml
+
+      - name: Build and unit-test
+        run: mvn -B verify
+
+      - name: Run agent demo (offline mock LLM)
+        env:
+          ANTHROPIC_API_KEY: ""
+        run: mvn -B -q compile exec:java -Dexec.args=--demo
+
+      # Optional: runs against real Claude only if you add the ANTHROPIC_API_KEY repo secret.
+      - name: Run agent demo (real LLM)
+        if: ${{ env.HAS_KEY == 'true' }}
+        env:
+          HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: mvn -B -q exec:java -Dexec.args=--demo

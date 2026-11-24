@@ -1,0 +1,15 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.6)
+
+2026-10-14T00:48:17.767+05:30  INFO 17056 --- [spring-ai-demo] [           main] c.e.springai.SpringAiDemoApplication     : Starting SpringAiDemoApplication v0.0.1-SNAPSHOT using Java 24.0.1 with PID 17056 (C:\Users\Admin\Desktop\sreedhar\git4_\codeforces_script\spring-ai-demo\target\app.jar started by Admin in C:\Users\Admin\Desktop\sreedhar\git4_\codeforces_script\spring-ai-demo)
+2026-10-14T00:48:17.779+05:30  INFO 17056 --- [spring-ai-demo] [           main] c.e.springai.SpringAiDemoApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-10-14T00:48:22.783+05:30  INFO 17056 --- [spring-ai-demo] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+2026-10-14T00:48:24.919+05:30  INFO 17056 --- [spring-ai-demo] [           main] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 8099 (http)
+2026-10-14T00:48:24.956+05:30  INFO 17056 --- [spring-ai-demo] [           main] c.e.springai.SpringAiDemoApplication     : Started SpringAiDemoApplication in 8.977 seconds (process running for 10.574)

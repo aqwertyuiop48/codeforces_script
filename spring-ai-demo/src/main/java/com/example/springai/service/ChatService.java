@@ -1,6 +1,7 @@
 package com.example.springai.service;
 
 import com.example.springai.config.AiProperties;
+import com.example.springai.messaging.ChatEventPublisher;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +24,12 @@ public class ChatService {
 
     private final LlmGateway gateway;
     private final AiProperties props;
+    private final ChatEventPublisher events;
 
-    public ChatService(LlmGateway gateway, AiProperties props) {
+    public ChatService(LlmGateway gateway, AiProperties props, ChatEventPublisher events) {
         this.gateway = gateway;
         this.props = props;
+        this.events = events;
     }
 
     public record ModelRef(String provider, String model, boolean configured) {}
@@ -47,7 +50,9 @@ public class ChatService {
         return gateway.complete(provider, model, SYSTEM_PROMPT, render(question))
                 .timeout(timeout())
                 .map(answer -> ChatReply.ok(provider, model, answer, elapsedMs(start)))
-                .onErrorResume(ex -> Mono.just(ChatReply.failed(provider, model, describe(ex), elapsedMs(start))));
+                .onErrorResume(ex -> Mono.just(ChatReply.failed(provider, model, describe(ex), elapsedMs(start))))
+                // publish an event for every real LLM call; a broker outage must never fail the user's request
+                .flatMap(reply -> events.publish(reply).onErrorResume(ex -> Mono.empty()).thenReturn(reply));
     }
 
     /** Fans the same question out to every configured model concurrently (reactive scatter/gather). */

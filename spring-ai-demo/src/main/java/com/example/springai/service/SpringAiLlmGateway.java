@@ -7,7 +7,9 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MimeType;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -44,23 +46,38 @@ public class SpringAiLlmGateway implements LlmGateway {
     @Override
     public Mono<String> complete(String provider, String model, String systemPrompt, String userPrompt) {
         // call() blocks, so keep it off the Netty event loop
-        return Mono.fromCallable(() -> request(provider, model, systemPrompt, userPrompt).call().content())
-                .subscribeOn(Schedulers.boundedElastic());
+        return blocking(() -> request(provider, model, systemPrompt).user(userPrompt).call().content());
     }
 
     @Override
     public Flux<String> stream(String provider, String model, String systemPrompt, String userPrompt) {
-        return request(provider, model, systemPrompt, userPrompt).stream().content();
+        return request(provider, model, systemPrompt).user(userPrompt).stream().content();
     }
 
-    private ChatClient.ChatClientRequestSpec request(String provider, String model, String system, String user) {
+    @Override
+    public Mono<String> describeImage(String provider, String model, String prompt, byte[] image, String mimeType) {
+        return blocking(() -> request(provider, model, "You describe images accurately and concisely.")
+                .user(u -> u.text(prompt).media(MimeType.valueOf(mimeType), new ByteArrayResource(image)))
+                .call().content());
+    }
+
+    @Override
+    public Mono<String> completeWithTools(String provider, String model, String systemPrompt, String userPrompt,
+                                          Object... tools) {
+        return blocking(() -> request(provider, model, systemPrompt).user(userPrompt).tools(tools).call().content());
+    }
+
+    private static Mono<String> blocking(java.util.concurrent.Callable<String> call) {
+        return Mono.fromCallable(call).subscribeOn(Schedulers.boundedElastic());
+    }
+
+    private ChatClient.ChatClientRequestSpec request(String provider, String model, String system) {
         ChatClient client = clients.get(provider);
         if (client == null) {
             throw new IllegalStateException("Provider '" + provider + "' is not configured (missing API key)");
         }
         return client.prompt()
                 .system(system)
-                .user(user)
                 .options(OpenAiChatOptions.builder().model(model).build());
     }
 }

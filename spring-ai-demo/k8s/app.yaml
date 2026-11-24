@@ -1,0 +1,96 @@
+# Minimal Kubernetes deployment. The "full" profile needs Postgres/Mongo/Kafka/RabbitMQ reachable at the
+# addresses in the ConfigMap; for a quick demo drop SPRING_PROFILES_ACTIVE and it runs with in-memory stores.
+#
+#   kind create cluster
+#   docker build -t spring-ai-demo:local . && kind load docker-image spring-ai-demo:local
+#   kubectl create secret generic ai-keys --from-literal=OPENAI_API_KEY=... --from-literal=GEMINI_API_KEY=...
+#   kubectl apply -f k8s/
+#   kubectl port-forward svc/spring-ai-api 8080:80
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-ai-config
+data:
+  POSTGRES_URL: r2dbc:postgresql://postgres:5432/ai
+  MONGO_URI: mongodb://mongo:27017/ai
+  KAFKA_BOOTSTRAP: kafka:9092
+  RABBIT_HOST: rabbitmq
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-ai-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: spring-ai, role: api }
+  template:
+    metadata:
+      labels: { app: spring-ai, role: api }
+    spec:
+      containers:
+        - name: app
+          image: spring-ai-demo:local
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 8080 }]
+          env:
+            - { name: APP_ROLE, value: api }
+          envFrom:
+            - configMapRef: { name: spring-ai-config }
+            - secretRef: { name: ai-keys, optional: true }
+          readinessProbe:
+            httpGet: { path: /actuator/health, port: 8080 }
+            initialDelaySeconds: 15
+          livenessProbe:
+            httpGet: { path: /actuator/health, port: 8080 }
+            initialDelaySeconds: 30
+          resources:
+            requests: { cpu: 250m, memory: 384Mi }
+            limits: { memory: 768Mi }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-ai-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: spring-ai, role: worker }
+  template:
+    metadata:
+      labels: { app: spring-ai, role: worker }
+    spec:
+      containers:
+        - name: app
+          image: spring-ai-demo:local
+          imagePullPolicy: IfNotPresent
+          env:
+            - { name: APP_ROLE, value: worker }
+          envFrom:
+            - configMapRef: { name: spring-ai-config }
+            - secretRef: { name: ai-keys, optional: true }
+          resources:
+            requests: { cpu: 250m, memory: 384Mi }
+            limits: { memory: 768Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-ai-api
+spec:
+  selector: { app: spring-ai, role: api }
+  ports:
+    - { port: 80, targetPort: 8080 }
+---
+# Scale workers with queue load. CPU is a rough proxy; KEDA on the RabbitMQ queue length is the better fit.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: spring-ai-worker
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: spring-ai-worker }
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } }

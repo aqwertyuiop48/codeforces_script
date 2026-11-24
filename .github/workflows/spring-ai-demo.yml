@@ -38,6 +38,26 @@ jobs:
           name: surefire-reports
           path: spring-ai-demo/target/surefire-reports
 
+  integration-test:
+    name: Integration tests (Testcontainers)
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: PostgreSQL + MongoDB + Kafka + RabbitMQ via Testcontainers
+        run: mvn -B verify
+      - name: Upload failsafe reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failsafe-reports
+          path: spring-ai-demo/target/failsafe-reports
+
   run-app:
     name: Run app and ask "how are you"
     needs: test
@@ -65,6 +85,14 @@ jobs:
           curl -sf localhost:8080/api/models
           echo
           curl -sf --max-time 120 "localhost:8080/api/chat/all?prompt=how%20are%20you"
+      - name: LangGraph grounded workflow, tool agent and reliability evals
+        run: |
+          curl -sf --max-time 120 "localhost:8080/api/ask?question=How%20many%20days%20do%20I%20have%20to%20return%20an%20item"
+          echo
+          curl -sf --max-time 120 "localhost:8080/api/agent?question=What%20is%20the%20status%20of%20order%20A100"
+          echo
+          pip install -q pytest requests
+          pytest -q eval/ || echo "evals failed or skipped (needs a working API key)"
       - name: Show app log on failure
         if: failure()
         run: cat app.log

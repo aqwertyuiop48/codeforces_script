@@ -39,3 +39,63 @@ ai:
         - gemini-3.5-flash
         - gemini-3.5-flash-lite
         - gemini-3.1-pro
+
+app:
+  # all = HTTP API + queue worker in one process, api = HTTP only, worker = queue consumer only
+  role: ${APP_ROLE:all}
+  workflow:
+    provider: ${WORKFLOW_PROVIDER:gemini}
+    model: ${WORKFLOW_MODEL:gemini-3.5-flash}
+    max-revisions: 2
+    top-k: 2
+
+---
+# Default profile: no databases or brokers needed. Infra auto-configuration is switched off and in-memory
+# stores / in-process dispatchers are used instead, so the app runs anywhere with just an API key.
+spring:
+  config:
+    activate:
+      on-profile: "!full"
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.r2dbc.R2dbcDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.r2dbc.R2dbcRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
+      - org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration
+      - org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+---
+# "full" profile: PostgreSQL (R2DBC) + MongoDB + Kafka + RabbitMQ. Start them with `docker compose up -d`.
+spring:
+  config:
+    activate:
+      on-profile: full
+  r2dbc:
+    url: ${POSTGRES_URL:r2dbc:postgresql://localhost:5432/ai}
+    username: ${POSTGRES_USER:ai}
+    password: ${POSTGRES_PASSWORD:ai}
+  sql:
+    init:
+      mode: always
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/ai}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    port: 5672
+    username: ${RABBIT_USER:guest}
+    password: ${RABBIT_PASSWORD:guest}
